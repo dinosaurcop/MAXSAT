@@ -4,12 +4,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
 
+
+//
 public class Runner {
 
 	//global 2d array of clauses
 	public static Vector<String> clauses = new Vector<String>();
 	
-	//reads file
+	//public static int[][] multi = new int[500][100];
+	//create list that will hold the arrays of all of the clauses
+	//read the file to strings, then create array of the string's length 
+	//and add it to the list of clauses
 	public static void read(File file) {
 		try {
 			FileReader fileRead = new FileReader(file);
@@ -24,7 +29,7 @@ public class Runner {
 			fileRead.close();
 		//System.out.println(stringBuff.toString());
 		} catch (IOException e) {
-		e.printStackTrace();
+			e.printStackTrace();
 		}
 	
 		for(int i=0; i<clauses.size(); i++){
