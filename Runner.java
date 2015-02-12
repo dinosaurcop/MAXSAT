@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 
+//
 public class Runner {
 	//public Vector<Integer> clauses = new Vector<Integer>();
 	//public Vector[] clauses;
@@ -121,7 +122,15 @@ public class Runner {
 
 	
 	//reads file
-	public void read(File file) {
+
+	//global 2d array of clauses
+	public static Vector<String> clauses = new Vector<String>();
+	
+	//public static int[][] multi = new int[500][100];
+	//create list that will hold the arrays of all of the clauses
+	//read the file to strings, then create array of the string's length 
+	//and add it to the list of clauses
+	public static void read(File file) {
 		try {
 			FileReader fileRead = new FileReader(file);
 			BufferedReader buffRead = new BufferedReader(fileRead);
@@ -154,16 +163,36 @@ public class Runner {
          		}
 			}
 			fileRead.close();
-			//System.out.println(stringBuff.toString());
+		//System.out.println(stringBuff.toString());
 		} catch (IOException e) {
-		e.printStackTrace();
+			e.printStackTrace();
 		}
-		for(int i=0; i<totalClauses; i++){
-			//System.out.printf(" %d ",clauses[i].elementAt(i));
+	
+		for(int i=0; i<clauses.size(); i++){
+			System.out.println(clauses.elementAt(i));
 		}
 		
 	}
-	
-	
-	
+
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+			File file = new File("t3pm3-5555.spn.cnf");
+			read(file);
+	}
+
 }
+
+/*
+posting changes:
+git pull
+git add -A
+git commit -m "message"
+git push
+
+if it gives you shit, just do:
+git stash
+git add -A
+git commit -m "message"
+git push
+
+*/
