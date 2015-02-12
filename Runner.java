@@ -121,13 +121,14 @@ public class Runner {
 			int valArray[] = new int[line.length()];
 			for(int i=0; i<line.length(); i++){
 				valArray[i] = Character.getNumericValue(line.charAt(i));
+				// System.out.println(valArray[i]);
 			}
 		    clauses.add(valArray);
 		}
 		scanner.close();
 	
 		for(int i=0; i<clauses.size(); i++){
-			System.out.println(clauses.get(i));
+			System.out.println(Arrays.toString(clauses.get(i)));
 		}
 		
 	}
