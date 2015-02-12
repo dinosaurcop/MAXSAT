@@ -104,6 +104,7 @@ public class Runner {
 
 	//global 2d array of clauses
 	public static Vector<String> clauses = new Vector<String>();
+	public static List<int[]> list = new ArrayList<int[]>();
 	
 	//public static int[][] multi = new int[500][100];
 	//create list that will hold the arrays of all of the clauses
@@ -111,7 +112,6 @@ public class Runner {
 	//and add it to the list of clauses
 	public static void read(File file) {
 
-		List<int[]> myList = new ArrayList<int[]>();
 		Scanner scanner = new Scanner(file);
 		while (scanner.hasNext()){
 			String line = scanner.next().replaceAll("\\s+","");
@@ -122,52 +122,6 @@ public class Runner {
 		    list.add(valArray);
 		}
 		scanner.close();
-		// try {
-
-
-
-		// 	Scanner scanner = new Scanner(System.in);
-		// 	int count = 0;
-		// 	while (scanner.hasNextLine()) {
-		// 	    count++;
-		// 	    scanner.nextLine();
-		// 	}
-
-		// 	FileReader fileRead = new FileReader(file);
-		// 	BufferedReader buffRead = new BufferedReader(fileRead);
-		// 	StringBuffer stringBuff = new StringBuffer();
-		// 	String line;
-		// 	int i = 1;
-		// 	int j=0;
-		// 	int k=0;
-		// 	while ((line = buffRead.readLine()) != null) {
-		// 		stringBuff.append(line);
-		// 		stringBuff.append("\n");
-		// 		if(i == 1){
-		// 			String temp[] = line.split(" ", 4);
-		// 			String word1 = temp[2];
-		// 			vars = Integer.parseInt(word1);
-		// 			String word2 = temp[3];
-		// 			totalClauses = Integer.parseInt(word2);
-		// 			System.out.printf("%d, %d %n",vars, totalClauses);
-		// 			i=0;
-		// 		}
-		// 		else{
-		// 			String[] temp = line.split(" ");
-		// 			while(Integer.parseInt(temp[k]) != 0){
-		// 				//System.out.printf("%d ",Integer.parseInt(temp[k]));
-		// 				System.out.printf("%d",clauses.toArray[i].add(Integer.parseInt(temp[k])));
-		// 				k++;
-		// 			}
-		// 			k=0;
-		// 			j++;
-  //        		}
-		// 	}
-		// 	fileRead.close();
-		// //System.out.println(stringBuff.toString());
-		// } catch (IOException e) {
-		// 	e.printStackTrace();
-		// }
 	
 		for(int i=0; i<clauses.size(); i++){
 			System.out.println(clauses.elementAt(i));
