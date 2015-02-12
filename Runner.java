@@ -5,15 +5,18 @@ import java.io.IOException;
 import java.util.Vector;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
+import java.io.FileNotFoundException;
 
 
 //
 public class Runner {
 	//public Vector<Integer> clauses = new Vector<Integer>();
 	//public Vector[] clauses;
-	List<List<Integer>> clauses;
+	// public static List<List<Integer>> clauses;
+	public static List<int[]> clauses = new ArrayList<int[]>();
 	public double [] prob;
 	public int [][] samples;
 	public int pop, iter;
@@ -98,33 +101,33 @@ public class Runner {
 
 	public Runner(){
 	}
-
-	
-	//reads file
-
-	//global 2d array of clauses
-	public static Vector<String> clauses = new Vector<String>();
-	public static List<int[]> list = new ArrayList<int[]>();
 	
 	//public static int[][] multi = new int[500][100];
 	//create list that will hold the arrays of all of the clauses
 	//read the file to strings, then create array of the string's length 
 	//and add it to the list of clauses
-	public static void read(File file) {
+	public void read(String filePath) {
+		Scanner scanner;
+		try {
+           scanner = new Scanner(new File(filePath));
+        } catch(FileNotFoundException fnfe) { 
+            System.out.println(fnfe.getMessage());
+            return;
+        } 
 
-		Scanner scanner = new Scanner(file);
+        // Scanner scanner = new Scanner(new File(filePath));
 		while (scanner.hasNext()){
 			String line = scanner.next().replaceAll("\\s+","");
-			int valArray[line.length()];
+			int valArray[] = new int[line.length()];
 			for(int i=0; i<line.length(); i++){
-				valArray[i] = Integer.parseInt(line.charAt(i));
+				valArray[i] = Character.getNumericValue(line.charAt(i));
 			}
-		    list.add(valArray);
+		    clauses.add(valArray);
 		}
 		scanner.close();
 	
 		for(int i=0; i<clauses.size(); i++){
-			System.out.println(clauses.elementAt(i));
+			System.out.println(clauses.get(i));
 		}
 		
 	}
@@ -132,15 +135,15 @@ public class Runner {
 	public static void main(String[] args){
 		// TODO Auto-generated method stub
 		 	Runner evolAlg = new Runner();
-			File file = new File(args[0]);
+			// File file = new File(args[0]);
 			evolAlg.pop=Integer.parseInt(args[1]);
 			evolAlg.plr=Double.parseDouble(args[2]);
 			evolAlg.nlr=Double.parseDouble(args[3]);
 			evolAlg.mprob=Double.parseDouble(args[4]);
 			evolAlg.mamt=Double.parseDouble(args[5]);
 			evolAlg.iter=Integer.parseInt(args[6]);
-			evolAlg.read(file);
-			evolAlg.clauses = new ArrayList<List<Integer>>(evolAlg.totalClauses);
+			evolAlg.read(args[0]);
+			// evolAlg.clauses = new ArrayList<List<Integer>>(evolAlg.totalClauses);
 			// evolAlg.clauses = new Vector[evolAlg.totalClauses];
 			// for(int i = 0; i < evolAlg.totalClauses; i++){
    // 				evolAlg.clauses[i] = new Vector();
