@@ -88,7 +88,7 @@ public class Runner {
 
 	public void genSamples(int i){
 		for(int j=0; j<vars; j++){
-			if(randGen.nextDouble() <= prob[i]){
+			if(randGen.nextDouble() <= prob[j]){
 				samples[i][j]=1;
 				//System.out.printf("%d", samples.[i][j]);
 			}
@@ -114,13 +114,21 @@ public class Runner {
             System.out.println(fnfe.getMessage());
             return;
         } 
+        //Get Header
+        String header = scanner.nextLine();
+        String[] headerVals = header.split(" ");
+        System.out.println(Arrays.toString(headerVals));
+        vars = Integer.parseInt(headerVals[2]);
+        totalClauses = Integer.parseInt(headerVals[3]);
 
         // Scanner scanner = new Scanner(new File(filePath));
 		while (scanner.hasNext()){
-			String line = scanner.next().replaceAll("\\s+","");
-			int valArray[] = new int[line.length()];
-			for(int i=0; i<line.length(); i++){
-				valArray[i] = Character.getNumericValue(line.charAt(i));
+			String line = scanner.nextLine();
+			String[] valStrings = line.split("\\s+");
+			int valArray[] = new int[valStrings.length-1];
+			for(int i=0; i<valStrings.length-1; i++){
+				// System.out.println(valStrings[i]);
+				valArray[i] = Integer.parseInt(valStrings[i]);
 				// System.out.println(valArray[i]);
 			}
 		    clauses.add(valArray);
