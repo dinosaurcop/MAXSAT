@@ -6,6 +6,7 @@ import java.util.Vector;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 
 //
@@ -20,29 +21,7 @@ public class Runner {
 	public int vars, totalClauses;
 	Random randGen = new Random();
 	
-	
-	public static void main(String[] args){
-		// TODO Auto-generated method stub
-		 	Runner evolAlg = new Runner();
-			File file = new File(args[0]);
-			evolAlg.pop=Integer.parseInt(args[1]);
-			evolAlg.plr=Double.parseDouble(args[2]);
-			evolAlg.nlr=Double.parseDouble(args[3]);
-			evolAlg.mprob=Double.parseDouble(args[4]);
-			evolAlg.mamt=Double.parseDouble(args[5]);
-			evolAlg.iter=Integer.parseInt(args[6]);
-			evolAlg.read(file);
-			evolAlg.clauses = new ArrayList<List<Integer>>(evolAlg.totalClauses);
-			// evolAlg.clauses = new Vector[evolAlg.totalClauses];
-			// for(int i = 0; i < evolAlg.totalClauses; i++){
-   // 				evolAlg.clauses[i] = new Vector();
-   // 			}
 
-			evolAlg.samples = new int[evolAlg.pop][evolAlg.vars];
-			evolAlg.prob = new double[evolAlg.vars];
-			
-			evolAlg.pbil();
-	}
 
 
 	public void pbil(){
@@ -131,42 +110,64 @@ public class Runner {
 	//read the file to strings, then create array of the string's length 
 	//and add it to the list of clauses
 	public static void read(File file) {
-		try {
-			FileReader fileRead = new FileReader(file);
-			BufferedReader buffRead = new BufferedReader(fileRead);
-			StringBuffer stringBuff = new StringBuffer();
-			String line;
-			int i = 1;
-			int j=0;
-			int k=0;
-			while ((line = buffRead.readLine()) != null) {
-				stringBuff.append(line);
-				stringBuff.append("\n");
-				if(i == 1){
-					String temp[] = line.split(" ", 4);
-					String word1 = temp[2];
-					vars = Integer.parseInt(word1);
-					String word2 = temp[3];
-					totalClauses = Integer.parseInt(word2);
-					System.out.printf("%d, %d %n",vars, totalClauses);
-					i=0;
-				}
-				else{
-					String[] temp = line.split(" ");
-					while(Integer.parseInt(temp[k]) != 0){
-						//System.out.printf("%d ",Integer.parseInt(temp[k]));
-						System.out.printf("%d",clauses.toArray[i].add(Integer.parseInt(temp[k])));
-						k++;
-					}
-					k=0;
-					j++;
-         		}
+
+		List<int[]> myList = new ArrayList<int[]>();
+		Scanner scanner = new Scanner(file);
+		while (scanner.hasNext()){
+			String line = scanner.next().replaceAll("\\s+","");
+			int valArray[line.length()];
+			for(int i=0; i<line.length(); i++){
+				valArray[i] = Integer.parseInt(line.charAt(i));
 			}
-			fileRead.close();
-		//System.out.println(stringBuff.toString());
-		} catch (IOException e) {
-			e.printStackTrace();
+		    list.add(valArray);
 		}
+		scanner.close();
+		// try {
+
+
+
+		// 	Scanner scanner = new Scanner(System.in);
+		// 	int count = 0;
+		// 	while (scanner.hasNextLine()) {
+		// 	    count++;
+		// 	    scanner.nextLine();
+		// 	}
+
+		// 	FileReader fileRead = new FileReader(file);
+		// 	BufferedReader buffRead = new BufferedReader(fileRead);
+		// 	StringBuffer stringBuff = new StringBuffer();
+		// 	String line;
+		// 	int i = 1;
+		// 	int j=0;
+		// 	int k=0;
+		// 	while ((line = buffRead.readLine()) != null) {
+		// 		stringBuff.append(line);
+		// 		stringBuff.append("\n");
+		// 		if(i == 1){
+		// 			String temp[] = line.split(" ", 4);
+		// 			String word1 = temp[2];
+		// 			vars = Integer.parseInt(word1);
+		// 			String word2 = temp[3];
+		// 			totalClauses = Integer.parseInt(word2);
+		// 			System.out.printf("%d, %d %n",vars, totalClauses);
+		// 			i=0;
+		// 		}
+		// 		else{
+		// 			String[] temp = line.split(" ");
+		// 			while(Integer.parseInt(temp[k]) != 0){
+		// 				//System.out.printf("%d ",Integer.parseInt(temp[k]));
+		// 				System.out.printf("%d",clauses.toArray[i].add(Integer.parseInt(temp[k])));
+		// 				k++;
+		// 			}
+		// 			k=0;
+		// 			j++;
+  //        		}
+		// 	}
+		// 	fileRead.close();
+		// //System.out.println(stringBuff.toString());
+		// } catch (IOException e) {
+		// 	e.printStackTrace();
+		// }
 	
 		for(int i=0; i<clauses.size(); i++){
 			System.out.println(clauses.elementAt(i));
@@ -174,12 +175,28 @@ public class Runner {
 		
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args){
 		// TODO Auto-generated method stub
-			File file = new File("t3pm3-5555.spn.cnf");
-			read(file);
-	}
+		 	Runner evolAlg = new Runner();
+			File file = new File(args[0]);
+			evolAlg.pop=Integer.parseInt(args[1]);
+			evolAlg.plr=Double.parseDouble(args[2]);
+			evolAlg.nlr=Double.parseDouble(args[3]);
+			evolAlg.mprob=Double.parseDouble(args[4]);
+			evolAlg.mamt=Double.parseDouble(args[5]);
+			evolAlg.iter=Integer.parseInt(args[6]);
+			evolAlg.read(file);
+			evolAlg.clauses = new ArrayList<List<Integer>>(evolAlg.totalClauses);
+			// evolAlg.clauses = new Vector[evolAlg.totalClauses];
+			// for(int i = 0; i < evolAlg.totalClauses; i++){
+   // 				evolAlg.clauses[i] = new Vector();
+   // 			}
 
+			evolAlg.samples = new int[evolAlg.pop][evolAlg.vars];
+			evolAlg.prob = new double[evolAlg.vars];
+			
+			evolAlg.pbil();
+	}
 }
 
 /*
