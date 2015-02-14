@@ -24,10 +24,11 @@ public class Runner {
 
 	//PBIL vals
 	public double [] prob;
-	public int [][] samples;
 	public double plr, nlr, mamt;
 
 	//Shared vals
+	public String alg;
+	public int [][] samples;
 	public int pop, iter;
 	public double mprob;
 	public int vars, totalClauses;
@@ -96,27 +97,66 @@ public class Runner {
 	// }
 
 
+
 	public void genSamples(int i){
 		for(int j=0; j<vars; j++){
-			if(randGen.nextDouble() <= prob[j]){
+			if(randGen.nextDouble() <= prob[j]){ //alexi: for ga, the initial prob threshold could vary as well
 				samples[i][j]=1;
 				//System.out.printf("%d", samples.[i][j]);
-			}
-			else{
+			} else{
 				samples[i][j]=0;
 				//System.out.printf("%d", samples.[i][j]);
 			}
 		}
 	}
 
+	//evaluate fitness of given individual (int array)
+	//note: we can either check mismatched clauses, or get more elaborate 
+	//with how many vals within those clauses are mismatched. Majercick says just
+	//count clauses, but I've left it flexible here for now.
+	public int fitness(int []worm){
+		int clauseMisses = 0;
+		for(int i=0; i<totalClauses; i++){
+			//check clause list at i, each in int [] 
+			int clause[] = clauses.get(i);
+			int valMisses = 0;
+			for(int j=0; j<clauses.length; j++){
+				if(clause[j]<0){ //neg
+					int index = abs(clause[j]);
+					if(worm[index]==1){valMisses+=1;}
+				} else if(worm[clause[j]]==0){valMisses+=1;} //pos
+			}
+			if (valMisses > 0){
+				clauseMisses += 1;
+			}
+		}
+		return clauseMisses;
+	}
+
 	public Runner(){
 	}
 
 	public void ga(){
-		//
+		//generate individuals
+		int i;
+		for(i=0; i<pop; i++){
+			genSamples(i);
+		}
+		//while iteration < iter & not all clauses satisfied
+		for(i=0; i<iter; i++){
+			//for each individual, generate fitness val (if any satisfy all clauses, return)
+			int fitness[] = new int[pop];
+			for(int j=0; j<pop; j++){
+				fitness[j] = fitness(samples[j]);
+			}
+			//use selection to pick individuals for reproduction
+			//use crossover to breed individuals
+			//set population to the new individuals
+		}
+
 	}
 
-	
+
 	public void boltmannSelection(){
 		//evolutionary fitness of individual
 
@@ -167,7 +207,8 @@ public class Runner {
 		 	Runner evolAlg = new Runner();
 			// File file = new File(args[0]);
 			evolAlg.read(args[0]);
-			if(args[7].equals("p")){
+			evolAlg.alg = args[7];
+			if(evolAlg.alg.equals("p")){
 				evolAlg.pop=Integer.parseInt(args[1]);
 				evolAlg.plr=Double.parseDouble(args[2]);
 				evolAlg.nlr=Double.parseDouble(args[3]);
@@ -177,14 +218,21 @@ public class Runner {
 				evolAlg.samples = new int[evolAlg.pop][evolAlg.vars];
 				evolAlg.prob = new double[evolAlg.vars];
 				evolAlg.pbil();
-			} else if(args[7].equals("g")){
+			} else if(evolAlg.alg.equals("g")){
 				evolAlg.pop=Integer.parseInt(args[1]);
 				evolAlg.select=args[2];
 				evolAlg.cross=args[3];
 				evolAlg.cprob=Double.parseDouble(args[4]);
 				evolAlg.mprob=Double.parseDouble(args[5]);
 				evolAlg.iter=Integer.parseInt(args[6]);
+				evolAlg.samples = new int[evolAlg.pop][evolAlg.vars];
+				evolAlg.prob = new double[evolAlg.vars];
+				for(int i=0; i<evolAlg.vars; i++){
+					evolAlg.prob[i] = 0.5; 
+				}
 				evolAlg.ga();
+			} else {
+				System.out.println("Evolutionary algorithm incorrectly entered.");
 			}
 			// evolAlg.clauses = new ArrayList<List<Integer>>(evolAlg.totalClauses);
 			// evolAlg.clauses = new Vector[evolAlg.totalClauses];
