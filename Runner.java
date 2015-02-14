@@ -17,11 +17,21 @@ public class Runner {
 	//public Vector[] clauses;
 	// public static List<List<Integer>> clauses;
 	public static List<int[]> clauses = new ArrayList<int[]>();
+
+	//GA vals
+	public String select, cross; //selection and crossover methods
+	public double cprob; 	//crossover probability
+
+	//PBIL vals
 	public double [] prob;
 	public int [][] samples;
+	public double plr, nlr, mamt;
+
+	//Shared vals
 	public int pop, iter;
-	public double plr, nlr, mprob, mamt;
+	public double mprob;
 	public int vars, totalClauses;
+
 	Random randGen = new Random();
 	
 
@@ -101,6 +111,17 @@ public class Runner {
 
 	public Runner(){
 	}
+
+	public void ga(){
+		//
+	}
+
+	
+	public void boltmannSelection(){
+		//evolutionary fitness of individual
+
+		//sum of evolutionary fitnesses of all individuals
+	}
 	
 	//public static int[][] multi = new int[500][100];
 	//create list that will hold the arrays of all of the clauses
@@ -145,23 +166,31 @@ public class Runner {
 		// TODO Auto-generated method stub
 		 	Runner evolAlg = new Runner();
 			// File file = new File(args[0]);
-			evolAlg.pop=Integer.parseInt(args[1]);
-			evolAlg.plr=Double.parseDouble(args[2]);
-			evolAlg.nlr=Double.parseDouble(args[3]);
-			evolAlg.mprob=Double.parseDouble(args[4]);
-			evolAlg.mamt=Double.parseDouble(args[5]);
-			evolAlg.iter=Integer.parseInt(args[6]);
 			evolAlg.read(args[0]);
+			if(args[7].equals("p")){
+				evolAlg.pop=Integer.parseInt(args[1]);
+				evolAlg.plr=Double.parseDouble(args[2]);
+				evolAlg.nlr=Double.parseDouble(args[3]);
+				evolAlg.mprob=Double.parseDouble(args[4]);
+				evolAlg.mamt=Double.parseDouble(args[5]);
+				evolAlg.iter=Integer.parseInt(args[6]);
+				evolAlg.samples = new int[evolAlg.pop][evolAlg.vars];
+				evolAlg.prob = new double[evolAlg.vars];
+				evolAlg.pbil();
+			} else if(args[7].equals("g")){
+				evolAlg.pop=Integer.parseInt(args[1]);
+				evolAlg.select=args[2];
+				evolAlg.cross=args[3];
+				evolAlg.cprob=Double.parseDouble(args[4]);
+				evolAlg.mprob=Double.parseDouble(args[5]);
+				evolAlg.iter=Integer.parseInt(args[6]);
+				evolAlg.ga();
+			}
 			// evolAlg.clauses = new ArrayList<List<Integer>>(evolAlg.totalClauses);
 			// evolAlg.clauses = new Vector[evolAlg.totalClauses];
 			// for(int i = 0; i < evolAlg.totalClauses; i++){
    // 				evolAlg.clauses[i] = new Vector();
    // 			}
-
-			evolAlg.samples = new int[evolAlg.pop][evolAlg.vars];
-			evolAlg.prob = new double[evolAlg.vars];
-			
-			evolAlg.pbil();
 	}
 }
 
