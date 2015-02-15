@@ -11,11 +11,9 @@ import java.util.Scanner;
 import java.io.FileNotFoundException;
 
 
-//
+
 public class Runner {
-	//public Vector<Integer> clauses = new Vector<Integer>();
-	//public Vector[] clauses;
-	// public static List<List<Integer>> clauses;
+
 	public static List<int[]> clauses = new ArrayList<int[]>();
 
 	//GA vals
@@ -24,18 +22,17 @@ public class Runner {
 
 	//PBIL vals
 	public double [] prob;
-	public double plr, nlr, mamt;
+	public double plr, nlr, mAmt;
 
 	//Shared vals
 	public String alg;
 	public int [][] samples;
 	public int pop, iter;
-	public double mprob;
+	public double mProb;
 	public int vars, totalClauses;
 
 	Random randGen = new Random();
 	
-
 
 
 	public void pbil(){
@@ -43,14 +40,27 @@ public class Runner {
 		for(int i=0; i<vars; i++){
 			prob[i]=0.5;
 		}
-		// for(int i=0; i<vars; i++){
-		// 	System.out.printf(" %f ",prob.elementAt(i));
-		// }
-		int iB=0;
-		int iW=0;
+
+		int iB=0; //best individual 
+		int iW=0; //worst individual
+		int fitness[] = new int[pop];
 		while(iter>0){
+			//generate samples based on probability vectors
+
 			for(int i=0; i<pop; i++) {
 				genSamples(i);
+				fitness[i] = fitness(samples[i]);
+				if(fitness[i]==totalClauses){
+					System.out.println("Found perfect match!");
+					System.out.println(Arrays.toString(samples[j]));
+            		break;
+				}
+				else if(fitness[i]>fitness[iB]){ //updates best individual
+					i=iB;
+				}
+				else if(fitness[i]<fitness[iW]){ //updates worst dividual
+					i=iW;
+				}
 			}	
 
 			//update probability vector towards best solution
@@ -68,14 +78,14 @@ public class Runner {
 			//mutate probability vector
 			int mutDir=1;
 			for(int q=0; q<vars; q++){
-				if(randGen.nextDouble() <= mprob){
+				if(randGen.nextDouble() <= mProb){
 					if(randGen.nextDouble() > 0.5){
 						mutDir=1;
 					}
 					else{
 						mutDir=0;
 					}
-					prob[q]=prob[q]*(1-mamt)+mutDir*mamt;
+					prob[q]=prob[q]*(1-mAmt)+mutDir*mAmt;
 				}
 			}
 			iter--;
@@ -84,31 +94,18 @@ public class Runner {
 	}
 
 
-	// public void eval(){
-	// 	int iB, iW;  
-	// 	for(int i=0; i<pop; i++){
-	// 		for(int j=0; j<vars; j++){
-	// 			for(int k=0; k<totalClauses; k++){
-	// 				(samples.elementAt(i)).elementAt(j); 
-	// 			}
-	// 		}
-
-	// 	}
-	// }
-
-
 
 	public void genSamples(int i){
 		for(int j=0; j<vars; j++){
 			if(randGen.nextDouble() <= prob[j]){ //alexi: for ga, the initial prob threshold could vary as well
 				samples[i][j]=1;
-				//System.out.printf("%d", samples.[i][j]);
 			} else{
 				samples[i][j]=0;
-				//System.out.printf("%d", samples.[i][j]);
 			}
 		}
 	}
+
+
 
 	//evaluate fitness of given individual (int array). Returns fitness score
 	//equal to the total number of clauses that it does NOT miss (i.e. hit count)
@@ -121,9 +118,9 @@ public class Runner {
 			//check clause list at i, each in int [] 
 			int clause[] = clauses.get(i);
 			int valMisses = 0;
-			for(int j=0; j<clauses.length; j++){
+			for(int j=0; j<clauses.size  (); j++){
 				if(clause[j]<0){ //neg
-					int index = abs(clause[j]);
+					int index = abs(clause[j]); //-------------------> ADELA: WHAT FUNCTION IS THIS?
 					if(worm[index]==1){valMisses+=1;}
 				} else if(worm[clause[j]]==0){valMisses+=1;} //pos
 			}
@@ -134,23 +131,25 @@ public class Runner {
 		return totalClauses-clauseMisses;
 	}
 
+
+
 	//breed individuals selected for reproduction
 	public void runBreeding(int []reproducers){
 		int[][] oldSamples = samples;
 		for(int i=0; i<pop; i++){
 			//randomly select two individuals
 			int parents[] = new int[2];
-			while(1){ //make sure individuals are unique
+			while(true){ //make sure individuals are unique //-------------> ADELA: CHANGED FROM 1 TO TRUE
 				parents[0] = randGen.nextInt(pop);
 				parents[1] = randGen.nextInt(pop);
 				if(parents[0] != parents[1]){break;}
 			}
 			//Uniform Crossover
 			if(randGen.nextDouble() <= cprob){
-				if(cross.eqauls("uc")){
+				if(cross.equals("uc")){
 					int p = 0; //start on first parent
 					for(int j=0; j<vars; j++){
-						if(randGen.nextDouble <= 0.47){ //slightly less than 50% chance of switching
+						if(randGen.nextDouble() <= 0.47){ //slightly less than 50% chance of switching
 							// p = Math.abs(p-1); //switches p, 0 -> 1 or 1 -> 0
 							p ^= 1; //switches p, 0 -> 1 or 1 -> 0
 						}
@@ -168,8 +167,15 @@ public class Runner {
 		}
 	}
 
+
+
 	public int[] rsGen(int []fitnesses){}
+
+
+
 	public int[] tsGen(int []fitnesses){}
+
+
 
 	public int[] bsGen(int []fitnesses){
 		int fitnessSum = 0; //sum of evolutionary fitnesses of all individuals
@@ -177,7 +183,7 @@ public class Runner {
 		for(i=0; i<pop; i++){
 			fitnessSum += Math.exp(fitnesses[i]); //e^fitness
 		}
-		List<int[]> selected = new ArrayList<int[]>()
+		List<int[]> selected = new ArrayList<int[]>();
 		for(i=0; i<pop; i++){
 			double selectProb = Math.exp(fitnesses[i])/fitnessSum; //fitness of individual/sum
 			if(randGen.nextDouble() <= selectProb){
@@ -190,6 +196,8 @@ public class Runner {
 		}
 		return selectedArray;
 	}
+
+
 
 	public void ga(){
 		//generate individuals
@@ -275,21 +283,51 @@ public class Runner {
 		
 	}
 
+
+
 	public Runner(){
 	}
 
+
+
 	public static void main(String[] args){
-		// TODO Auto-generated method stub
-		 	Runner evolAlg = new Runner();
-			// File file = new File(args[0]);
+
+		Runner evolAlg = new Runner();
+
+		// process command line arguments
+		if (args.length != 8){
+	    	System.out.println();
+	    	System.out.println("java Runner file individuals selection/learning rate crossover/negative learning rate pC/pM pM/mutation amount generations GA/PBIL");
+	   		System.out.println("    individuals  = number of individuals in population (int)");
+	    	System.out.println("    selection    = type of selection of breeding pool (string):");
+	    	System.out.println("                     ts   = tournament selection - implies ts1");
+	    	System.out.println("                            ts1 = same individual cannot compete against self");
+	    	System.out.println("                            ts2 = same individual can compete against self");
+	    	System.out.println("                     rs   = rank based selection");
+	   		System.out.println("                     bs   = Boltzmann selection");
+	   		System.out.println("    learning rate = (0,1) (double)");
+	    	System.out.println("    crossover    = crossover method (string):");
+	    	System.out.println("                     1c   = 1-point crossover");
+	    	System.out.println("                     2c   = 2-point crossover");
+	    	System.out.println("                     uc   = uniform crossover");
+	    	System.out.println("    negative learning rate = (0,1) (double)");
+	    	System.out.println("    pC           = crossover probability (double)");
+	   	 	System.out.println("    pM           = mutation probability (double)");
+	   	 	System.out.println("    mutation amount = (0,1) (double)");
+	    	System.out.println("    generations  = max number of generations to run (int)");
+	    	System.out.println();
+	    	System.exit(1); // prevent the program from continuing without the correct inputs
+		}
+
+
 			evolAlg.read(args[0]);
 			evolAlg.alg = args[7];
 			if(evolAlg.alg.equals("p")){
 				evolAlg.pop=Integer.parseInt(args[1]);
 				evolAlg.plr=Double.parseDouble(args[2]);
 				evolAlg.nlr=Double.parseDouble(args[3]);
-				evolAlg.mprob=Double.parseDouble(args[4]);
-				evolAlg.mamt=Double.parseDouble(args[5]);
+				evolAlg.mProb=Double.parseDouble(args[4]);
+				evolAlg.mAmt=Double.parseDouble(args[5]);
 				evolAlg.iter=Integer.parseInt(args[6]);
 				evolAlg.samples = new int[evolAlg.pop][evolAlg.vars];
 				evolAlg.prob = new double[evolAlg.vars];
@@ -299,22 +337,22 @@ public class Runner {
 				evolAlg.select=args[2];
 				evolAlg.cross=args[3];
 				evolAlg.cprob=Double.parseDouble(args[4]);
-				evolAlg.mprob=Double.parseDouble(args[5]);
+				evolAlg.mProb=Double.parseDouble(args[5]);
 				evolAlg.iter=Integer.parseInt(args[6]);
 				evolAlg.samples = new int[evolAlg.pop][evolAlg.vars];
 				evolAlg.prob = new double[evolAlg.vars];
-				for(int i=0; i<evolAlg.vars; i++){
+				for(int i=0; i<evolAlg.vars; i++){ 
 					evolAlg.prob[i] = 0.5; 
 				}
 				evolAlg.ga();
 			} else {
 				System.out.println("Evolutionary algorithm incorrectly entered.");
+				if(evolAlg.plr<=0 || evolAlg.plr>=1 || evolAlg.nlr<=0 || evolAlg.nlr>=1 ){
+					System.out.println("The learning rate and negative learning rate should have a probability in (0,1)");
+				}
+				System.exit(1);
 			}
-			// evolAlg.clauses = new ArrayList<List<Integer>>(evolAlg.totalClauses);
-			// evolAlg.clauses = new Vector[evolAlg.totalClauses];
-			// for(int i = 0; i < evolAlg.totalClauses; i++){
-   // 				evolAlg.clauses[i] = new Vector();
-   // 			}
+			
 	}
 }
 
