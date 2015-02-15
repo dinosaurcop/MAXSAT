@@ -150,7 +150,7 @@ public class Runner {
 			int valMisses = 0;
 			for(int j=0; j<clauses.size  (); j++){
 				if(clause[j]<0){ //neg
-					int index = abs(clause[j]); //-------------------> ADELA: WHAT FUNCTION IS THIS?
+					int index = Math.abs(clause[j]);
 					if(worm[index]==1){valMisses+=1;}
 				} else if(worm[clause[j]]==0){valMisses+=1;} //pos
 			}
@@ -170,12 +170,14 @@ public class Runner {
 			//randomly select two individuals
 			int parents[] = new int[2];
 			while(true){ //make sure individuals are unique //-------------> ADELA: CHANGED FROM 1 TO TRUE
-				parents[0] = randGen.nextInt(pop);
-				parents[1] = randGen.nextInt(pop);
+				parents[0] = randGen.nextInt(reproducers.length);
+				parents[1] = randGen.nextInt(reproducers.length);
+				parents[0] = reproducers[parents[0]];
+				parents[1] = reproducers[parents[1]];
 				if(parents[0] != parents[1]){break;}
 			}
 			//Uniform Crossover
-			if(randGen.nextDouble() <= cprob){
+			if(randGen.nextDouble() <= cprob){	//crossover prob determines whether or not crossover occurs
 				if(cross.equals("uc")){
 					int p = 0; //start on first parent
 					for(int j=0; j<vars; j++){
@@ -199,6 +201,7 @@ public class Runner {
 
 
 
+<<<<<<< HEAD
 public int partition(int array[], int left, int right) {
       int i=left, j=right;
       int temp;
@@ -230,10 +233,14 @@ public int partition(int array[], int left, int right) {
       if (index < higher)
             quickSort(array, index, higher);
 }
+=======
+	public int[] rsGen(int []fitnesses){return new int[]{0};}
+
+>>>>>>> 72d67cb64f443725bac81eb5b01516992b1bdb22
 
 	public int[] rsGen(int []fitnesses){}
 
-	public int[] tsGen(int []fitnesses){}
+	public int[] tsGen(int []fitnesses){return new int[]{0};}
 
 
 
@@ -243,11 +250,12 @@ public int partition(int array[], int left, int right) {
 		for(i=0; i<pop; i++){
 			fitnessSum += Math.exp(fitnesses[i]); //e^fitness
 		}
-		List<int[]> selected = new ArrayList<int[]>();
+		List<Integer> selected = new ArrayList<Integer>();
+		// int selected[] = new int[pop];
 		for(i=0; i<pop; i++){
 			double selectProb = Math.exp(fitnesses[i])/fitnessSum; //fitness of individual/sum
 			if(randGen.nextDouble() <= selectProb){
-				selected.add(samples[i]);
+				selected.add(i);
 			}
 		}
 		int selectedArray[] = new int[selected.size()];
@@ -279,7 +287,7 @@ public int partition(int array[], int left, int right) {
 			}
 
 			//use selection to pick individuals for reproduction
-			int selected[];
+			int selected[]; //array of indexes of selected invididuals in samples array
 			int selectionMethod = 3;
 			switch (select){
 				case "ts":
@@ -292,6 +300,7 @@ public int partition(int array[], int left, int right) {
 					selected = bsGen(fitness);
 					break;
 				default:
+					selected = new int[]{0};
 					System.out.println("Selection method must match 'ts', 'rs', or 'bs'");
 
 			}
