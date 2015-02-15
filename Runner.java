@@ -166,12 +166,14 @@ public class Runner {
 	//breed individuals selected for reproduction
 	public void runBreeding(int []reproducers){
 		int[][] oldSamples = samples;
-		for(int i=0; i<pop; i++){
+		for(int i=0; i<reproducers.length; i++){
 			//randomly select two individuals
 			int parents[] = new int[2];
 			while(true){ //make sure individuals are unique //-------------> ADELA: CHANGED FROM 1 TO TRUE
-				parents[0] = randGen.nextInt(pop);
-				parents[1] = randGen.nextInt(pop);
+				parents[0] = randGen.nextInt(reproducers.length);
+				parents[1] = randGen.nextInt(reproducers.length);
+				parents[0] = reproducers[parents[0]];
+				parents[1] = reproducers[parents[1]];
 				if(parents[0] != parents[1]){break;}
 			}
 			//Uniform Crossover
