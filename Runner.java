@@ -150,7 +150,7 @@ public class Runner {
 			int valMisses = 0;
 			for(int j=0; j<clauses.size  (); j++){
 				if(clause[j]<0){ //neg
-					int index = abs(clause[j]); //-------------------> ADELA: WHAT FUNCTION IS THIS?
+					int index = Math.abs(clause[j]);
 					if(worm[index]==1){valMisses+=1;}
 				} else if(worm[clause[j]]==0){valMisses+=1;} //pos
 			}
@@ -199,11 +199,11 @@ public class Runner {
 
 
 
-	public int[] rsGen(int []fitnesses){}
+	public int[] rsGen(int []fitnesses){return new int[]{0};}
 
 
 
-	public int[] tsGen(int []fitnesses){}
+	public int[] tsGen(int []fitnesses){return new int[]{0};}
 
 
 
@@ -213,11 +213,12 @@ public class Runner {
 		for(i=0; i<pop; i++){
 			fitnessSum += Math.exp(fitnesses[i]); //e^fitness
 		}
-		List<int[]> selected = new ArrayList<int[]>();
+		List<Integer> selected = new ArrayList<Integer>();
+		// int selected[] = new int[pop];
 		for(i=0; i<pop; i++){
 			double selectProb = Math.exp(fitnesses[i])/fitnessSum; //fitness of individual/sum
 			if(randGen.nextDouble() <= selectProb){
-				selected.add(samples[i]);
+				selected.add(i);
 			}
 		}
 		int selectedArray[] = new int[selected.size()];
@@ -249,7 +250,7 @@ public class Runner {
 			}
 
 			//use selection to pick individuals for reproduction
-			int selected[];
+			int selected[]; //array of indexes of selected invididuals in samples array
 			int selectionMethod = 3;
 			switch (select){
 				case "ts":
@@ -262,6 +263,7 @@ public class Runner {
 					selected = bsGen(fitness);
 					break;
 				default:
+					selected = new int[]{0};
 					System.out.println("Selection method must match 'ts', 'rs', or 'bs'");
 
 			}
