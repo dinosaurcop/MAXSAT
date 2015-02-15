@@ -25,6 +25,7 @@ public class Runner {
 	public double plr, nlr, mAmt;
 
 	//Shared vals
+	public String fileName;
 	public String alg;
 	public int [][] samples;
 	public int pop, iter;
@@ -41,8 +42,10 @@ public class Runner {
 			prob[i]=0.5;
 		}
 
-		int iB=0; //best individual 
-		int iW=0; //worst individual
+		int fB=fitness(samples[0]); //fitness of best individual 
+		int fW=fitness(samples[0]); //fitness worst individual
+		int iB=0; //index of best individual
+		int iW=0; //index of worst individual
 		int fitness[] = new int[pop];
 		while(iter>0){
 			//generate samples based on probability vectors
@@ -52,26 +55,35 @@ public class Runner {
 				fitness[i] = fitness(samples[i]);
 				if(fitness[i]==totalClauses){
 					System.out.println("Found perfect match!");
-					System.out.println(Arrays.toString(samples[j]));
             		break;
 				}
-				else if(fitness[i]>fitness[iB]){ //updates best individual
-					i=iB;
+				else if(fitness[i]>fB){ //updates best individual
+					fB=fitness[i];
+					iB=i;
 				}
-				else if(fitness[i]<fitness[iW]){ //updates worst dividual
-					i=iW;
+				else if(fitness[i]<fW){ //updates worst dividual
+					fW=fitness[i];
+					iW=i;
 				}
 			}	
 
 			//update probability vector towards best solution
 			for(int k=0; k<vars; k++){
 				prob[k]=prob[k]*(1-plr)+samples[iB][k]*plr;
+				if(prob[k]>=1 || prob[k]<=0){
+					System.out.println("Probability vector has exceeded the boundaries of (0,1).");
+					break;
+				}
 			}
 
 			//update probability away from worst solution
 			for(int l=0; l<vars; l++){
 				if(samples[iB][l] != samples[iW][l]){
 					prob[l]=prob[l]*(1-nlr)+samples[iB][l]*nlr;
+				}
+				if(prob[l]>=1 || prob[l]<=0){
+					System.out.println("Probability vector has exceeded the boundaries of (0,1).");
+					break;
 				}
 			}
 
@@ -86,11 +98,29 @@ public class Runner {
 						mutDir=0;
 					}
 					prob[q]=prob[q]*(1-mAmt)+mutDir*mAmt;
+					if(prob[q]>=1 || prob[q]<=0){
+						System.out.println("Probability vector has exceeded the boundaries of (0,1).");
+						break;
+					}
 				}
 			}
 			iter--;
 		}
-
+		// //name of file
+		// System.out.printf("The name of the file is: %s", fileName);
+		// //number of variables and clauses 
+		// System.out.printf("The number of variables is: %d. The number of clauses is: %d", vars, totalClauses);
+		// //the number and percentage of clauses of best assignment
+		// System.out.printf("The number of satisfied clauses of the best assignment is: %d,", fB);
+		// System.out.printf("The percentage of clauses of the best assignment is: ")
+		// //assignment of the results
+		// System.out.println("The assignment of the clauses is: ");
+		// for(int a=; a<vars; a++){
+		// 	if(samples[iB][a]>0){System.out.printf("%d ", )}
+		// 	else{System.out.printf}
+		// }
+		// //the iteration during which the best assignment was found
+		// System.out.printf("The best assignment was found on the %d iteration", iter);
 	}
 
 
@@ -319,8 +349,8 @@ public class Runner {
 	    	System.exit(1); // prevent the program from continuing without the correct inputs
 		}
 
-
-			evolAlg.read(args[0]);
+			evolAlg.fileName=args[0];
+			evolAlg.read(evolAlg.fileName);
 			evolAlg.alg = args[7];
 			if(evolAlg.alg.equals("p")){
 				evolAlg.pop=Integer.parseInt(args[1]);
