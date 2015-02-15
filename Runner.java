@@ -110,7 +110,8 @@ public class Runner {
 		}
 	}
 
-	//evaluate fitness of given individual (int array)
+	//evaluate fitness of given individual (int array). Returns fitness score
+	//equal to the total number of clauses that it does NOT miss (i.e. hit count)
 	//note: we can either check mismatched clauses, or get more elaborate 
 	//with how many vals within those clauses are mismatched. Majercick says just
 	//count clauses, but I've left it flexible here for now.
@@ -130,10 +131,45 @@ public class Runner {
 				clauseMisses += 1;
 			}
 		}
-		return clauseMisses;
+		return totalClauses-clauseMisses;
 	}
 
-	public Runner(){
+	//breed individuals selected for reproduction
+	public void runBreeding(int []reproducers){
+		for(int i=0; i<pop; i++){
+			//randomly select two individuals
+			int p1, p2;
+			while(1){ //make sure individuals are unique
+				p1 = randGen.nextInt(pop);
+				p2 = randGen.nextInt(pop);
+				if(p1 != p2){break;}
+			}
+			
+
+		}
+	}
+
+	public int[] rsGen(int []fitnesses){}
+	public int[] tsGen(int []fitnesses){}
+
+	public int[] bsGen(int []fitnesses){
+		int fitnessSum = 0; //sum of evolutionary fitnesses of all individuals
+		int i;
+		for(i=0; i<pop; i++){
+			fitnessSum += Math.exp(fitnesses[i]); //e^fitness
+		}
+		List<int[]> selected = new ArrayList<int[]>()
+		for(i=0; i<pop; i++){
+			double selectProb = Math.exp(fitnesses[i])/fitnessSum; //fitness of individual/sum
+			if(randGen.nextDouble() <= selectProb){
+				selected.add(samples[i]);
+			}
+		}
+		int selectedArray[] = new int[selected.size()];
+		for(i=0; i<selected.size(); i++){
+			selectedArray[i] = selected.get(i);
+		}
+		return selectedArray;
 	}
 
 	public void ga(){
@@ -148,20 +184,38 @@ public class Runner {
 			int fitness[] = new int[pop];
 			for(int j=0; j<pop; j++){
 				fitness[j] = fitness(samples[j]);
+				if(fitness[j]==totalClauses){
+					System.out.println("Found perfect match!");
+					System.out.println(Arrays.toString(samples[j]));
+            		// return;
+				}
 			}
+
 			//use selection to pick individuals for reproduction
+			int selected[];
+			int selectionMethod = 3;
+			switch (select){
+				case "ts":
+					selected = tsGen(fitness);
+					break;
+				case "rs":
+					selected = rsGen(fitness);
+					break;
+				case "bs":
+					selected = bsGen(fitness);
+					break;
+				default:
+					System.out.println("Selection method must match 'ts', 'rs', or 'bs'");
+
+			}
 			//use crossover to breed individuals
+			runBreeding(selected);
 			//set population to the new individuals
 		}
 
 	}
 
 
-	public void boltmannSelection(){
-		//evolutionary fitness of individual
-
-		//sum of evolutionary fitnesses of all individuals
-	}
 	
 	//public static int[][] multi = new int[500][100];
 	//create list that will hold the arrays of all of the clauses
@@ -200,6 +254,9 @@ public class Runner {
 			System.out.println(Arrays.toString(clauses.get(i)));
 		}
 		
+	}
+
+	public Runner(){
 	}
 
 	public static void main(String[] args){
