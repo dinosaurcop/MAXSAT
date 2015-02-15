@@ -136,13 +136,32 @@ public class Runner {
 
 	//breed individuals selected for reproduction
 	public void runBreeding(int []reproducers){
+		int[][] oldSamples = samples;
 		for(int i=0; i<pop; i++){
 			//randomly select two individuals
-			int p1, p2;
+			int parents[] = new int[2];
 			while(1){ //make sure individuals are unique
-				p1 = randGen.nextInt(pop);
-				p2 = randGen.nextInt(pop);
-				if(p1 != p2){break;}
+				parents[0] = randGen.nextInt(pop);
+				parents[1] = randGen.nextInt(pop);
+				if(parents[0] != parents[1]){break;}
+			}
+			//Uniform Crossover
+			if(randGen.nextDouble() <= cprob){
+				if(cross.eqauls("uc")){
+					int p = 0; //start on first parent
+					for(int j=0; j<vars; j++){
+						if(randGen.nextDouble <= 0.47){ //slightly less than 50% chance of switching
+							// p = Math.abs(p-1); //switches p, 0 -> 1 or 1 -> 0
+							p ^= 1; //switches p, 0 -> 1 or 1 -> 0
+						}
+						samples[i][j] = oldSamples[parents[p]][j];
+					}
+				} else if(cross.equals("1c")){
+					//Single Point Crossover
+				}
+			} else {
+				//no crossover, pick the first individual
+				samples[i] = oldSamples[parents[0]];
 			}
 			
 
