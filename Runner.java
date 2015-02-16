@@ -185,16 +185,42 @@ public class Runner {
 							// p = Math.abs(p-1); //switches p, 0 -> 1 or 1 -> 0
 							p ^= 1; //switches p, 0 -> 1 or 1 -> 0
 						}
-						samples[i][j] = oldSamples[parents[p]][j];
+						//MUTATION
+						if(randGen.nextDouble() <= mprob){
+							samples[i][j] = rand.nextInt(2*vars + 1) - vars;
+						} else {
+							samples[i][j] = oldSamples[parents[p]][j];
+						}
+						
 					}
-				} else if(cross.equals("1c")){
-					//Single Point Crossover
+				} else if(cross.equals("1c")){ //Single Point Crossover
+					//select point
+					int crosspoint = randGen.nextInt(vars);
+					int p = 0;
+					//create child
+					for(int j=0; j<vars; j++){
+						if(j==crosspoint){
+							p = 1;
+						}
+						//MUTATION
+						if(randGen.nextDouble() <= mprob){
+							samples[i][j] = rand.nextInt(2*vars + 1) - vars;
+						} else {
+							samples[i][j] = oldSamples[parents[p]][j];
+						}
+					}
 				}
 			} else {
 				//no crossover, pick the first individual
-				samples[i] = oldSamples[parents[0]];
-			}
-			
+				for(int j=0; j<vars; j++){
+					//MUTATION
+					if(randGen.nextDouble() <= mprob){
+							samples[i][j] = rand.nextInt(2*vars + 1) - vars;
+					} else {
+						samples[i][j] = oldSamples[parents[0]][j];
+					}
+				}
+			}		
 
 		}
 	}
@@ -354,7 +380,7 @@ public class Runner {
 		}
 
 			evolAlg.fileName=args[0];
-			evolAlg.read(evolAlg.fileName);
+			evolAlg.read(evolAlg.fileName); //gets vars, totalClauses, and builds clauses list (of arrays)
 			evolAlg.alg = args[7];
 			if(evolAlg.alg.equals("p")){
 				evolAlg.pop=Integer.parseInt(args[1]);
