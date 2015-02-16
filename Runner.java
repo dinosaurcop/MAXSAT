@@ -149,10 +149,10 @@ public class Runner {
 			int clause[] = clauses.get(i);
 			int valMisses = 0;
 			for(int j=0; j<clause.length; j++){
+				int index = Math.abs(clause[j])-1;
 				if(clause[j]<0){ //neg
-					int index = Math.abs(clause[j]);
 					if(individual[index]==1){valMisses+=1;}
-				} else if(individual[clause[j]]==0){valMisses+=1;} //pos
+				} else if(individual[index]==0){valMisses+=1;} //pos
 			}
 			if (valMisses > 0){
 				clauseMisses += 1;
