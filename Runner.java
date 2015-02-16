@@ -60,7 +60,7 @@ public class Runner {
 		int iB=0; //index of best individual
 		int iW=0; //index of worst individual
 		int fitness[] = new int[pop];
-		while(iter>0){
+		for(int w=0; w<iter; w++){
 			//generate samples based on probability vectors
 
 			for(int i=0; i<pop; i++) {
@@ -117,23 +117,22 @@ public class Runner {
 					}
 				}
 			}
-			iter--;
 		}
-		// //name of file
-		// System.out.printf("The name of the file is: %s", fileName);
-		// //number of variables and clauses 
-		// System.out.printf("The number of variables is: %d. The number of clauses is: %d", vars, totalClauses);
-		// //the number and percentage of clauses of best assignment
-		// System.out.printf("The number of satisfied clauses of the best assignment is: %d,", fB);
-		// System.out.printf("The percentage of clauses of the best assignment is: ")
-		// //assignment of the results
-		// System.out.println("The assignment of the clauses is: ");
-		// for(int a=; a<vars; a++){
-		// 	if(samples[iB][a]>0){System.out.printf("%d ", )}
-		// 	else{System.out.printf}
-		// }
-		// //the iteration during which the best assignment was found
-		// System.out.printf("The best assignment was found on the %d iteration", iter);
+		//name of file
+		System.out.printf("The name of the file is: %s %n", fileName);
+		//number of variables and clauses 
+		System.out.printf("The number of variables is: %d. The number of clauses is: %d %n", vars, totalClauses);
+		//the number and percentage of clauses of best assignment
+		System.out.printf("The number of satisfied clauses of the best assignment is: %d %n", fB);
+		System.out.printf("The percentage of clauses of the best assignment is: %d %n", (fB/totalClauses)*100);
+		//assignment of the results
+		System.out.println("The assignment of the clauses is: ");
+		for(int a=0; a<vars; a++){
+			if(samples[iB][a]==0){System.out.printf("%d ", -a-1);}
+			else{System.out.printf("%d, ", a+1);}
+		}
+		//the iteration during which the best assignment was found
+		System.out.printf("%n The best assignment was found on the %d iteration %n", iter);
 	}
 
 
