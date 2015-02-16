@@ -142,17 +142,17 @@ public class Runner {
 	//note: we can either check mismatched clauses, or get more elaborate 
 	//with how many vals within those clauses are mismatched. Majercick says just
 	//count clauses, but I've left it flexible here for now.
-	public int fitness(int []worm){
+	public int fitness(int []individual){
 		int clauseMisses = 0;
 		for(int i=0; i<totalClauses; i++){
 			//check clause list at i, each in int [] 
 			int clause[] = clauses.get(i);
 			int valMisses = 0;
-			for(int j=0; j<clauses.size  (); j++){
+			for(int j=0; j<clause.length; j++){
 				if(clause[j]<0){ //neg
 					int index = Math.abs(clause[j]);
-					if(worm[index]==1){valMisses+=1;}
-				} else if(worm[clause[j]]==0){valMisses+=1;} //pos
+					if(individual[index]==1){valMisses+=1;}
+				} else if(individual[clause[j]]==0){valMisses+=1;} //pos
 			}
 			if (valMisses > 0){
 				clauseMisses += 1;
@@ -186,8 +186,8 @@ public class Runner {
 							p ^= 1; //switches p, 0 -> 1 or 1 -> 0
 						}
 						//MUTATION
-						if(randGen.nextDouble() <= mprob){
-							samples[i][j] = rand.nextInt(2*vars + 1) - vars;
+						if(randGen.nextDouble() <= mProb){
+							samples[i][j] = randGen.nextInt(2*vars + 1) - vars;
 						} else {
 							samples[i][j] = oldSamples[parents[p]][j];
 						}
@@ -203,8 +203,8 @@ public class Runner {
 							p = 1;
 						}
 						//MUTATION
-						if(randGen.nextDouble() <= mprob){
-							samples[i][j] = rand.nextInt(2*vars + 1) - vars;
+						if(randGen.nextDouble() <= mProb){
+							samples[i][j] = randGen.nextInt(2*vars + 1) - vars;
 						} else {
 							samples[i][j] = oldSamples[parents[p]][j];
 						}
@@ -214,8 +214,8 @@ public class Runner {
 				//no crossover, pick the first individual
 				for(int j=0; j<vars; j++){
 					//MUTATION
-					if(randGen.nextDouble() <= mprob){
-							samples[i][j] = rand.nextInt(2*vars + 1) - vars;
+					if(randGen.nextDouble() <= mProb){
+							samples[i][j] = randGen.nextInt(2*vars + 1) - vars;
 					} else {
 						samples[i][j] = oldSamples[parents[0]][j];
 					}
@@ -258,7 +258,7 @@ public class Runner {
       if (index < higher)
             quickSort(array, index, higher);
 	}
-	
+
 	public int[] rsGen(int []fitnesses){return new int[]{0};}
 
 
