@@ -238,40 +238,6 @@ public class Runner {
 		}
 	}
 
-
-
-	// public int partition(int array[], int left, int right) {
-	//       int i=left, j=right;
-	//       int temp;
-	//       int mid = array[(left + right)/2];
-	     
-	//       while (i<=j) {
-	//             while (array[i]<mid) {
-	//                   i++;
-	//               }
-	//             while (array[j]>mid){
-	//                   j--;
-	//               }
-	//             if (i<=j) {
-	//                   temp = array[i];
-	//                   array[i] = array[j];
-	//                   array[j] = temp;
-	//                   i++;
-	//                   j--;
-	//             }
-	//       }
-	     
-	//       return i;
-	// }
- 
-	// public void quickSort(int array[], int lower, int higher) {
- //      int index = partition(array, lower, higher);
- //      if (lower < index - 1)
- //            quickSort(array, lower, index - 1);
- //      if (index < higher)
- //            quickSort(array, index, higher);
-	// }
-
 	public int[] rsGen(int []fitnesses){
 		//sort individuals by fitness (low->high)
 		//fitnesses is array of fitness scores based by individual's index,
