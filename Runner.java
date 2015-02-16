@@ -9,10 +9,23 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+
+
 
 
 
 public class Runner {
+	static class sampleObj{
+		int fitness;
+		int index;
+		public sampleObj(int i, int fit) {
+	        index = i;
+	        fitness = fit;
+	    }
+	}
 
 	public static List<int[]> clauses = new ArrayList<int[]>();
 
@@ -154,7 +167,7 @@ public class Runner {
 					if(individual[index]==1){valMisses+=1;}
 				} else if(individual[index]==0){valMisses+=1;} //pos
 			}
-			if (valMisses > 0){
+			if (valMisses == clause.length){
 				clauseMisses += 1;
 			}
 		}
@@ -164,6 +177,7 @@ public class Runner {
 
 
 	//breed individuals selected for reproduction
+	//accepts array of indexes of selected samples (correspond to individuals in global samples array)
 	public void runBreeding(int []reproducers){
 		int[][] oldSamples = samples;
 		for(int i=0; i<pop; i++){
@@ -227,45 +241,116 @@ public class Runner {
 
 
 
-	public int partition(int array[], int left, int right) {
-	      int i=left, j=right;
-	      int temp;
-	      int mid = array[(left + right)/2];
+	// public int partition(int array[], int left, int right) {
+	//       int i=left, j=right;
+	//       int temp;
+	//       int mid = array[(left + right)/2];
 	     
-	      while (i<=j) {
-	            while (array[i]<mid) {
-	                  i++;
-	              }
-	            while (array[j]>mid){
-	                  j--;
-	              }
-	            if (i<=j) {
-	                  temp = array[i];
-	                  array[i] = array[j];
-	                  array[j] = temp;
-	                  i++;
-	                  j--;
-	            }
-	      }
+	//       while (i<=j) {
+	//             while (array[i]<mid) {
+	//                   i++;
+	//               }
+	//             while (array[j]>mid){
+	//                   j--;
+	//               }
+	//             if (i<=j) {
+	//                   temp = array[i];
+	//                   array[i] = array[j];
+	//                   array[j] = temp;
+	//                   i++;
+	//                   j--;
+	//             }
+	//       }
 	     
-	      return i;
-	}
+	//       return i;
+	// }
  
-	public void quickSort(int array[], int lower, int higher) {
-      int index = partition(array, lower, higher);
-      if (lower < index - 1)
-            quickSort(array, lower, index - 1);
-      if (index < higher)
-            quickSort(array, index, higher);
+	// public void quickSort(int array[], int lower, int higher) {
+ //      int index = partition(array, lower, higher);
+ //      if (lower < index - 1)
+ //            quickSort(array, lower, index - 1);
+ //      if (index < higher)
+ //            quickSort(array, index, higher);
+	// }
+
+	public int[] rsGen(int []fitnesses){
+		//sort individuals by fitness (low->high)
+		//fitnesses is array of fitness scores based by individual's index,
+		//so we need to effectively flip the array so that index = rank, and val = index
+		//1. create new array of sampleObjects (contain both the sample and their fitness score)
+		sampleObj[] sampleObjects = new sampleObj[pop];
+		int rankSum = 0;
+		int i;
+		for(i=0; i<pop; i++){
+			sampleObjects[i] = new sampleObj(i, fitnesses[i]);
+			rankSum += i;
+		}
+		Arrays.sort(sampleObjects);
+		System.out.println(Arrays.asList(sampleObjects));
+		//2. select individuals with probability rank/ranksum
+		List<Integer> selected = new ArrayList<Integer>();
+		for(i=0; i<pop; i++){
+			if(randGen.nextDouble() <= i/rankSum){
+				selected.add(sampleObjects[i].index);
+			}
+		}
+		//convert list to array
+		int selectedArray[] = new int[selected.size()];
+		for(i=0; i<selected.size(); i++){
+			selectedArray[i] = selected.get(i);
+		}
+		//return
+		return selectedArray;
+
 	}
 
-	public int[] rsGen(int []fitnesses){return new int[]{0};}
+
+	public int[] tsGen(int []fitnesses){
+		int gCount = (int) (pop*0.4) + 2; //ensures at least 2 parents per gen
+		int wCount = (int) (gCount * 0.6) + 2;
+		// List<Integer> gladiators = new ArrayList<Integer>();
+		Map<Integer, Boolean> gladiators = new HashMap<Integer, Boolean>();
+		//randomly select gCount individuals for competition pool (gladiators)
+		int i;
+		for(i = 0; i<gCount; i++){
+			int sel = randGen.nextInt(pop);
+			if(gladiators.containsKey(sel)){
+				i--;
+				continue;
+			} else {
+				gladiators.put(sel, true);
+			}
+		}
+		//put gladiators into sorted array (high -> low)
+		int[] gArray = new int[gCount];
+		i = 0;
+		for (Integer key : gladiators.keySet()) {
+			if(i==0){ //if first gladiator, just add at 0;
+				gArray[0] = key;
+			} else { //otherwise, do a simple sort
+				for(int j=0; j<=i; j++){
+					if(j==i){ //if end of added values reached, insert
+						gArray[j] = key;
+					} else if(fitnesses[gArray[j]] <= fitnesses[key]){ //if individual with > fitness reached, insert
+						for(int k=i;k>j; k--){ //move all smaller individuals up 1
+							gArray[k] = gArray[k-1];
+						}
+						gArray[j] = key;
+					}
+				}
+			}
+		    i++;
+		}
+		//select first k individuals from the gArray
+		int[] selected = new int[wCount];
+		for(i=0; i<wCount; i++){
+			selected[i] = gArray[i];
+		}
+		return selected;
+	}
 
 
-	public int[] tsGen(int []fitnesses){return new int[]{0};}
-
-
-
+	//Boltzmann Selection - returns array of index values of samples for reproduction
 	public int[] bsGen(int []fitnesses){
 		int fitnessSum = 0; //sum of evolutionary fitnesses of all individuals
 		int i;
