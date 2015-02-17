@@ -30,6 +30,7 @@ public class Runner {
 	//GA vals
 	public String select, cross; //selection and crossover methods
 	public double cprob; 	//crossover probability
+	public double startingTemp = 20.0, coolingRate = 2.0;
 
 	//PBIL vals
 	public double [] prob;
@@ -46,7 +47,25 @@ public class Runner {
 
 	Random randGen = new Random();
 	
+	public void printResults(int bestFitness, int bestIndex, int bestIteration){
+		double percent = (double) bestFitness / totalClauses *100;
+		//name of file
+		System.out.printf("The name of the file is: %s %n", fileName);
+		//number of variables and clauses 
+		System.out.printf("The number of variables is: %d. The number of clauses is: %d %n", vars, totalClauses);
+		//the number and percentage of clauses of best assignment
+		System.out.printf("The number of satisfied clauses of the best assignment is: %d %n", bestFitness);
+		System.out.printf("The percentage of clauses of the best assignment is: %f %n", percent);
+		//assignment of the results
+		System.out.println("The assignment of the clauses is: ");
+		for(int a=0; a<vars; a++){
+			if(samples[bestIndex][a]==0){System.out.printf("%d ", -a-1);}
+			else{System.out.printf("%d, ", a+1);}
+		}
+		//the iteration during which the best assignment was found
+		System.out.printf("%nThe best assignment was found on the %d iteration %n", bestIteration);
 
+	}
 
 	public void pbil(){
 		//initialize probability vector to 0.5
@@ -191,16 +210,20 @@ public class Runner {
 	//breed individuals selected for reproduction
 	//accepts array of indexes of selected samples (correspond to individuals in global samples array)
 	public void runBreeding(int []reproducers){
+		System.out.println(Arrays.toString(reproducers));
 		int[][] oldSamples = samples;
 		for(int i=0; i<pop; i++){
 			//randomly select two individuals
 			int parents[] = new int[2];
-			while(true){ //make sure individuals are unique //-------------> ADELA: CHANGED FROM 1 TO TRUE
+			boolean picking = true;
+			while(picking){ //make sure individuals are unique //-------------> ADELA: CHANGED FROM 1 TO TRUE
+				// System.out.printf("parent selection loop\n");
 				parents[0] = randGen.nextInt(reproducers.length);
 				parents[1] = randGen.nextInt(reproducers.length);
+				// System.out.printf("parent 1 index: %d  parent 2 index: %d\n", parents[0], parents[1]);
 				parents[0] = reproducers[parents[0]];
 				parents[1] = reproducers[parents[1]];
-				if(parents[0] != parents[1]){break;}
+				if(parents[0] != parents[1]){picking=false;}
 			}
 			//Uniform Crossover
 			if(randGen.nextDouble() <= cprob){	//crossover prob determines whether or not crossover occurs
@@ -286,6 +309,8 @@ public class Runner {
 	public int[] tsGen(int []fitnesses){
 		int gCount = (int) (pop*0.4) + 2; //ensures at least 2 parents per gen
 		int wCount = (int) (gCount * 0.6) + 2;
+		// System.out.printf("Running Tournament Selection. gCount: %d and wCount: %d\n", gCount, wCount);
+		// System.out.println(Arrays.toString(fitnesses));
 		// List<Integer> gladiators = new ArrayList<Integer>();
 		Map<Integer, Boolean> gladiators = new HashMap<Integer, Boolean>();
 		//randomly select gCount individuals for competition pool (gladiators)
@@ -294,27 +319,28 @@ public class Runner {
 			int sel = randGen.nextInt(pop);
 			if(gladiators.containsKey(sel)){
 				i--;
-				continue;
 			} else {
 				gladiators.put(sel, true);
 			}
 		}
+
 		//put gladiators into sorted array (high -> low)
 		int[] gArray = new int[gCount];
 		i = 0;
 		for (Integer key : gladiators.keySet()) {
-			if(i==0){ //if first gladiator, just add at 0;
-				gArray[0] = key;
-			} else { //otherwise, do a simple sort
-				for(int j=0; j<=i; j++){
-					if(j==i){ //if end of added values reached, insert
-						gArray[j] = key;
-					} else if(fitnesses[gArray[j]] <= fitnesses[key]){ //if individual with > fitness reached, insert
-						for(int k=i;k>j; k--){ //move all smaller individuals up 1
-							gArray[k] = gArray[k-1];
-						}
-						gArray[j] = key;
+			// System.out.printf("key:%d\n",key);
+			// System.out.println(Arrays.toString(gArray));
+			for(int j=0; j<=i; j++){
+				if(j==i || i == 0){ //if end of added values reached, or just starting
+					gArray[j] = key;
+				} else if(fitnesses[gArray[j]] < fitnesses[key]){ //if individual with > fitness reached, insert
+					// System.out.printf("superior found. new i and f: %d - %d, prior: %d - %d, at index: %d", key, fitnesses[key], gArray[j], fitnesses[gArray[j]], j);
+					for(int k=i; k>j; k--){ //move all smaller individuals up 1
+						gArray[k] = gArray[k-1];
 					}
+					gArray[j] = key;
+					// System.out.println(Arrays.toString(gArray));
+					break;
 				}
 			}
 		    i++;
@@ -324,50 +350,47 @@ public class Runner {
 		for(i=0; i<wCount; i++){
 			selected[i] = gArray[i];
 		}
+		// System.out.println(Arrays.toString(selected));
 		return selected;
 	}
 
 
 	//Boltzmann Selection - returns array of index values of samples for reproduction
-	public int[] bsGen(int []fitnesses){
-		int fitnessSum = 0; //sum of evolutionary fitnesses of all individuals
+	public int[] bsGen(int []fitnesses, int iteration){
+		double fitnessAvg, fitnessSum = 0; //sum of evolutionary fitnesses of all individuals
+		double temp = startingTemp - (iteration*coolingRate);
+		if(temp<= 0){temp=coolingRate;}
+
 		int i;
+		double[] bsFitnesses = new double[fitnesses.length];
+		// temp = 1;
 		for(i=0; i<pop; i++){
-			fitnessSum += Math.exp(fitnesses[i]); //e^fitness
+			bsFitnesses[i] = Math.exp(((double)fitnesses[i] / temp)); //scale fitness to objective state
+			fitnessSum += bsFitnesses[i]; //e^fitness
 		}
+		// fitnessAvg = fitnessSum/pop;
+		// fitnessSum = 0;
+		// System.out.printf("Fitness avg: %f\n", fitnessAvg);
+		// for(i=0; i<pop; i++){
+		// 	bsFitnesses[i] = bsFitnesses[i]/fitnessAvg;
+		// 	fitnessSum += bsFitnesses[i];
+		// 	System.out.printf("expected val for [%d] == %f\n", i, bsFitnesses[i]);
+		// }
 		List<Integer> selected = new ArrayList<Integer>();
 		// int selected[] = new int[pop];
 		for(i=0; i<pop; i++){
-			double selectProb = Math.exp(fitnesses[i])/fitnessSum; //fitness of individual/sum
+			double selectProb = 60 * bsFitnesses[i]/fitnessSum; //fitness of individual/sum * constant for scaling
+			System.out.printf("prob: %f  fitness: %f   /boltzFSUM: %f\n", selectProb, bsFitnesses[i], fitnessSum);
 			if(randGen.nextDouble() <= selectProb){
+				System.out.printf("indiv selected, prob: %f  boltzFSUM: %f\n", selectProb, fitnessSum);
 				selected.add(i);
 			}
 		}
 		int selectedArray[] = new int[selected.size()];
-		for(i=0; i<selected.size(); i++){
+		for(i=0; i<selectedArray.length; i++){
 			selectedArray[i] = selected.get(i);
 		}
 		return selectedArray;
-	}
-
-	public void printResults(int bestFitness, int bestIndex, int bestIteration){
-		double percent = (double) clauseFitCount / totalClauses *100;
-		//name of file
-		System.out.printf("The name of the file is: %s %n", fileName);
-		//number of variables and clauses 
-		System.out.printf("The number of variables is: %d. The number of clauses is: %d %n", vars, totalClauses);
-		//the number and percentage of clauses of best assignment
-		System.out.printf("The number of satisfied clauses of the best assignment is: %d %n", clauseFitCount);
-		System.out.printf("The percentage of clauses of the best assignment is: %f %n", percent);
-		//assignment of the results
-		System.out.println("The assignment of the clauses is: ");
-		for(int a=0; a<vars; a++){
-			if(samples[bestIndex][a]==0){System.out.printf("%d ", -a-1);}
-			else{System.out.printf("%d, ", a+1);}
-		}
-		//the iteration during which the best assignment was found
-		System.out.printf("%nThe best assignment was found on the %d iteration %n", iteration);
-
 	}
 
 	public void ga(){
@@ -379,6 +402,7 @@ public class Runner {
 		boolean foundPerfect = false;
 		//while iteration < iter & not all clauses satisfied
 		for(i=0; i<iter; i++){
+			System.out.printf("Iteration: %d\n", i);
 			//for each individual, generate fitness val (if any satisfy all clauses, return)
 			int fitness[] = new int[pop];
 			for(int j=0; j<pop; j++){
@@ -389,7 +413,7 @@ public class Runner {
 					bestIndex = j;
 					bestIteration = i;
 					bestFitness = fitness[j];
-					foundBest = true;
+					foundPerfect = true;
 					break;
 				} else {
 					if(fitness[j]>bestFitness){
@@ -399,7 +423,7 @@ public class Runner {
 					}
 				}
 			}
-			if(foundBest){break;} //if universal match found, break
+			if(foundPerfect){break;} //if universal match found, break
 			//if umatch not found, breed next generation
 			//use selection to pick individuals for reproduction
 			int selected[]; //array of indexes of selected invididuals in samples array
@@ -412,18 +436,19 @@ public class Runner {
 					selected = rsGen(fitness);
 					break;
 				case "bs":
-					selected = bsGen(fitness);
+					selected = bsGen(fitness, i);
 					break;
 				default:
 					selected = new int[]{0};
 					System.out.println("Selection method must match 'ts', 'rs', or 'bs'");
 
 			}
+			System.out.printf("Pop: %d, Selected length: %d\n", pop, selected.length);
 			//use crossover to breed individuals
 			runBreeding(selected);
 		}
 		printResults(bestFitness, bestIndex, bestIteration);
-
+		return;
 	}
 
 
