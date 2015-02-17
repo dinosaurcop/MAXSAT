@@ -44,6 +44,7 @@ public class Runner {
 	public int pop, iter;
 	public double mProb;
 	public int vars, totalClauses;
+	public long time;
 
 	Random randGen = new Random();
 	
@@ -54,27 +55,40 @@ public class Runner {
 		for(int i=0; i<vars; i++){
 			prob[i]=0.5;
 		}
+		//int fB, fW, iB, iW;
+		
+		int iterBest = -1;
+		int bestOverallFitness = -1;
+		int bestIndex = -1;
 
-		int fB=fitness(samples[0]); //fitness of best individual 
-		int fW=fitness(samples[0]); //fitness worst individual
-		int iB=0; //index of best individual
-		int iW=0; //index of worst individual
-		int fitness[] = new int[pop];
-		for(int w=0; w<iter; w++){
+		while(iter>0) {
 			//generate samples based on probability vectors
+				int fB=0; //fitness of best individual 
+				int fW=totalClauses; //fitness worst individual
+				int iB=-1; //index of best individual
+				int iW=-1; //index of worst individual
+				int fitness[]=new int[pop];
+
+				// for(int i=0; i<vars; i++){
+				// 	System.out.printf(" %.02f", prob[i]);
+				// }
+				// System.out.println();
+
 
 			for(int i=0; i<pop; i++) {
 				genSamples(i);
 				fitness[i] = fitness(samples[i]);
+				//System.out.printf(" %d", fitness[i]);
 				if(fitness[i]==totalClauses){
 					System.out.println("Found perfect match!");
+					iterBest=iter;
             		break;
 				}
-				else if(fitness[i]>fB){ //updates best individual
+				if(fitness[i]>fB){ //updates best individual
 					fB=fitness[i];
 					iB=i;
 				}
-				else if(fitness[i]<fW){ //updates worst dividual
+				if(fitness[i]<fW){ //updates worst dividual
 					fW=fitness[i];
 					iW=i;
 				}
@@ -83,6 +97,7 @@ public class Runner {
 			//update probability vector towards best solution
 			for(int k=0; k<vars; k++){
 				prob[k]=prob[k]*(1-plr)+samples[iB][k]*plr;
+				//System.out.printf(" %f", prob[k]);
 				if(prob[k]>=1 || prob[k]<=0){
 					System.out.println("Probability vector has exceeded the boundaries of (0,1).");
 					break;
@@ -101,7 +116,7 @@ public class Runner {
 			}
 
 			//mutate probability vector
-			int mutDir=1;
+			int mutDir;
 			for(int q=0; q<vars; q++){
 				if(randGen.nextDouble() <= mProb){
 					if(randGen.nextDouble() > 0.5){
@@ -117,22 +132,31 @@ public class Runner {
 					}
 				}
 			}
+
+			if((fB != bestOverallFitness) && (bestOverallFitness>0)){
+				iterBest=iter;
+			}
+			bestOverallFitness = fB;
+			bestIndex=iB;
+			iter--;
 		}
+
+		double percent = (double) bestOverallFitness / totalClauses;
 		//name of file
 		System.out.printf("The name of the file is: %s %n", fileName);
 		//number of variables and clauses 
 		System.out.printf("The number of variables is: %d. The number of clauses is: %d %n", vars, totalClauses);
 		//the number and percentage of clauses of best assignment
-		System.out.printf("The number of satisfied clauses of the best assignment is: %d %n", fB);
-		System.out.printf("The percentage of clauses of the best assignment is: %d %n", (fB/totalClauses)*100);
+		System.out.printf("The number of satisfied clauses of the best assignment is: %d %n", bestOverallFitness);
+		System.out.printf("The percentage of clauses of the best assignment is: %f %n", percent);
 		//assignment of the results
 		System.out.println("The assignment of the clauses is: ");
 		for(int a=0; a<vars; a++){
-			if(samples[iB][a]==0){System.out.printf("%d ", -a-1);}
+			if(samples[bestIndex][a]==0){System.out.printf("%d ", -a-1);}
 			else{System.out.printf("%d, ", a+1);}
 		}
 		//the iteration during which the best assignment was found
-		System.out.printf("%n The best assignment was found on the %d iteration %n", iter);
+		System.out.printf("%nThe best assignment was found on the %d iteration %n", iterBest);
 	}
 
 
@@ -418,9 +442,9 @@ public class Runner {
 		}
 		scanner.close();
 	
-		for(int i=0; i<clauses.size(); i++){
-			System.out.println(Arrays.toString(clauses.get(i)));
-		}
+		// for(int i=0; i<clauses.size(); i++){
+		// 	System.out.println(Arrays.toString(clauses.get(i)));
+		// }
 		
 	}
 
@@ -432,9 +456,10 @@ public class Runner {
 
 
 	public static void main(String[] args){
-
+		//long start = System.nanoTime();
 		Runner evolAlg = new Runner();
 
+		long start = System.currentTimeMillis();
 		// process command line arguments
 		if (args.length != 8){
 	    	System.out.println();
@@ -493,7 +518,9 @@ public class Runner {
 				}
 				System.exit(1);
 			}
-			
+
+			evolAlg.time = System.currentTimeMillis() - start;
+			System.out.printf("The program ran for %d milliseconds.%n", evolAlg.time);
 	}
 }
 
