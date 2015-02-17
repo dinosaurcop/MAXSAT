@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Comparator;
 
 
 
@@ -30,7 +31,7 @@ public class Runner {
 	//GA vals
 	public String select, cross; //selection and crossover methods
 	public double cprob; 	//crossover probability
-	public double startingTemp = 20.0, coolingRate = 2.0;
+	public double startingTemp = 30.0, coolingRate = 2.0;
 
 	//PBIL vals
 	public double [] prob;
@@ -63,7 +64,7 @@ public class Runner {
 			else{System.out.printf("%d, ", a+1);}
 		}
 		//the iteration during which the best assignment was found
-		System.out.printf("%nThe best assignment was found on the %d iteration %n", bestIteration);
+		System.out.printf("%nThe best assignment was found on iteration %d.%n", bestIteration+1);
 
 	}
 
@@ -220,11 +221,11 @@ public class Runner {
 				// System.out.printf("parent selection loop\n");
 				parents[0] = randGen.nextInt(reproducers.length);
 				parents[1] = randGen.nextInt(reproducers.length);
-				// System.out.printf("parent 1 index: %d  parent 2 index: %d\n", parents[0], parents[1]);
-				parents[0] = reproducers[parents[0]];
-				parents[1] = reproducers[parents[1]];
 				if(parents[0] != parents[1]){picking=false;}
+				// System.out.printf("parent 1 index: %d  parent 2 index: %d\n", parents[0], parents[1]);
 			}
+			parents[0] = reproducers[parents[0]];
+			parents[1] = reproducers[parents[1]];
 			//Uniform Crossover
 			if(randGen.nextDouble() <= cprob){	//crossover prob determines whether or not crossover occurs
 				if(cross.equals("uc")){
@@ -280,21 +281,41 @@ public class Runner {
 		//so we need to effectively flip the array so that index = rank, and val = index
 		//1. create new array of sampleObjects (contain both the sample and their fitness score)
 		sampleObj[] sampleObjects = new sampleObj[pop];
-		int rankSum = 0;
-		int i;
+		int i, repSize = (int)(pop * 0.4), rankSum = 0;
 		for(i=0; i<pop; i++){
 			sampleObjects[i] = new sampleObj(i, fitnesses[i]);
 			rankSum += i;
 		}
-		Arrays.sort(sampleObjects);
-		System.out.println(Arrays.asList(sampleObjects));
+		Arrays.sort(sampleObjects, new Comparator<sampleObj>() {
+	        @Override
+	        public int compare(sampleObj o1, sampleObj o2) {
+	            return o1.index > o2.index ? +1 : o1.index < o2.index ? -1 : 0;
+	        }
+	    });
+		// System.out.println(Arrays.asList(sampleObjects.index));
 		//2. select individuals with probability rank/ranksum
 		List<Integer> selected = new ArrayList<Integer>();
-		for(i=0; i<pop; i++){
-			if(randGen.nextDouble() <= i/rankSum){
-				selected.add(sampleObjects[i].index);
+
+		//random selection pool size
+		// for(i=0; i<pop; i++){
+		// 	System.out.printf("prob: %d,  index: %d,  ranksum: %d\n", i/rankSum, i, rankSum);
+		// 	if(randGen.nextDouble() <= i/rankSum){
+		// 		selected.add(sampleObjects[i].index);
+		// 	}
+		// }
+		//roullette wheel
+		for(i=0; i<repSize; i++){
+			int val = randGen.nextInt(rankSum);
+			int wheel = 0;
+			for(int j=0; j<pop; j++){
+				wheel += i;
+				if (val <= wheel){
+					selected.add(sampleObjects[i].index);
+					break;
+				}
 			}
 		}
+
 		//convert list to array
 		int selectedArray[] = new int[selected.size()];
 		for(i=0; i<selected.size(); i++){
@@ -402,7 +423,7 @@ public class Runner {
 		boolean foundPerfect = false;
 		//while iteration < iter & not all clauses satisfied
 		for(i=0; i<iter; i++){
-			System.out.printf("Iteration: %d\n", i);
+			System.out.printf("Iteration: %d\n", i+1);
 			//for each individual, generate fitness val (if any satisfy all clauses, return)
 			int fitness[] = new int[pop];
 			for(int j=0; j<pop; j++){
