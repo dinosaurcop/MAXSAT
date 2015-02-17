@@ -131,26 +131,24 @@ public class Runner {
 			bestOverallFitness = fB;
 			bestIndex=iB;
 		}
-
-		double percent = (double) bestOverallFitness / totalClauses *100;
-		//name of file
-		System.out.printf("The name of the file is: %s %n", fileName);
-		//number of variables and clauses 
-		System.out.printf("The number of variables is: %d. The number of clauses is: %d %n", vars, totalClauses);
-		//the number and percentage of clauses of best assignment
-		System.out.printf("The number of satisfied clauses of the best assignment is: %d %n", bestOverallFitness);
-		System.out.printf("The percentage of clauses of the best assignment is: %f %n", percent);
-		//assignment of the results
-		System.out.println("The assignment of the clauses is: ");
-		for(int a=0; a<vars; a++){
-			if(samples[bestIndex][a]==0){System.out.printf("%d ", -a-1);}
-			else{System.out.printf("%d, ", a+1);}
-		}
-		//the iteration during which the best assignment was found
-		System.out.printf("%nThe best assignment was found on the %d iteration %n", iterBest);
+		printResults(bestOverallFitness, bestIndex, iterBest);
+		// double percent = (double) bestOverallFitness / totalClauses *100;
+		// //name of file
+		// System.out.printf("The name of the file is: %s %n", fileName);
+		// //number of variables and clauses 
+		// System.out.printf("The number of variables is: %d. The number of clauses is: %d %n", vars, totalClauses);
+		// //the number and percentage of clauses of best assignment
+		// System.out.printf("The number of satisfied clauses of the best assignment is: %d %n", bestOverallFitness);
+		// System.out.printf("The percentage of clauses of the best assignment is: %f %n", percent);
+		// //assignment of the results
+		// System.out.println("The assignment of the clauses is: ");
+		// for(int a=0; a<vars; a++){
+		// 	if(samples[bestIndex][a]==0){System.out.printf("%d ", -a-1);}
+		// 	else{System.out.printf("%d, ", a+1);}
+		// }
+		// //the iteration during which the best assignment was found
+		// System.out.printf("%nThe best assignment was found on the %d iteration %n", iterBest);
 	}
-
-
 
 	public void genSamples(int i){
 		for(int j=0; j<vars; j++){
@@ -352,14 +350,33 @@ public class Runner {
 		return selectedArray;
 	}
 
+	public void printResults(int bestFitness, int bestIndex, int bestIteration){
+		double percent = (double) clauseFitCount / totalClauses *100;
+		//name of file
+		System.out.printf("The name of the file is: %s %n", fileName);
+		//number of variables and clauses 
+		System.out.printf("The number of variables is: %d. The number of clauses is: %d %n", vars, totalClauses);
+		//the number and percentage of clauses of best assignment
+		System.out.printf("The number of satisfied clauses of the best assignment is: %d %n", clauseFitCount);
+		System.out.printf("The percentage of clauses of the best assignment is: %f %n", percent);
+		//assignment of the results
+		System.out.println("The assignment of the clauses is: ");
+		for(int a=0; a<vars; a++){
+			if(samples[bestIndex][a]==0){System.out.printf("%d ", -a-1);}
+			else{System.out.printf("%d, ", a+1);}
+		}
+		//the iteration during which the best assignment was found
+		System.out.printf("%nThe best assignment was found on the %d iteration %n", iteration);
 
+	}
 
 	public void ga(){
 		//generate individuals
-		int i;
+		int i, bestIndex=0, bestIteration=0, bestFitness=0;
 		for(i=0; i<pop; i++){
 			genSamples(i);
 		}
+		boolean foundPerfect = false;
 		//while iteration < iter & not all clauses satisfied
 		for(i=0; i<iter; i++){
 			//for each individual, generate fitness val (if any satisfy all clauses, return)
@@ -369,10 +386,21 @@ public class Runner {
 				if(fitness[j]==totalClauses){
 					System.out.println("Found perfect match!");
 					System.out.println(Arrays.toString(samples[j]));
-            		// return;
+					bestIndex = j;
+					bestIteration = i;
+					bestFitness = fitness[j];
+					foundBest = true;
+					break;
+				} else {
+					if(fitness[j]>bestFitness){
+						bestIndex=j;
+						bestIteration = i;
+						bestFitness = fitness[j];
+					}
 				}
 			}
-
+			if(foundBest){break;} //if universal match found, break
+			//if umatch not found, breed next generation
 			//use selection to pick individuals for reproduction
 			int selected[]; //array of indexes of selected invididuals in samples array
 			int selectionMethod = 3;
@@ -393,8 +421,8 @@ public class Runner {
 			}
 			//use crossover to breed individuals
 			runBreeding(selected);
-			//set population to the new individuals
 		}
+		printResults(bestFitness, bestIndex, bestIteration);
 
 	}
 
