@@ -15,8 +15,6 @@ import java.util.Map;
 
 
 
-
-
 public class Runner {
 	static class sampleObj{
 		int fitness;
@@ -55,7 +53,6 @@ public class Runner {
 		for(int i=0; i<vars; i++){
 			prob[i]=0.5;
 		}
-		//int fB, fW, iB, iW;
 		
 		int iterBest = -1;
 		int bestOverallFitness = -1;
@@ -68,11 +65,6 @@ public class Runner {
 				int iB=-1; //index of best individual
 				int iW=-1; //index of worst individual
 				int fitness[]=new int[pop];
-
-				// for(int i=0; i<vars; i++){
-				// 	System.out.printf(" %.02f", prob[i]);
-				// }
-				// System.out.println();
 
 
 			for(int i=0; i<pop; i++) {
@@ -136,10 +128,8 @@ public class Runner {
 				}
 			}
 
-			//System.out.printf(" %d", fB);
 			bestOverallFitness = fB;
 			bestIndex=iB;
-			//iter--;
 		}
 
 		double percent = (double) bestOverallFitness / totalClauses *100;
