@@ -61,7 +61,7 @@ public class Runner {
 		int bestOverallFitness = -1;
 		int bestIndex = -1;
 
-		while(iter>0) {
+		for(int w=0; w<iter; w++) {
 			//generate samples based on probability vectors
 				int fB=0; //fitness of best individual 
 				int fW=totalClauses; //fitness worst individual
@@ -86,6 +86,9 @@ public class Runner {
 				}
 				if(fitness[i]>fB){ //updates best individual
 					fB=fitness[i];
+					if(fB>bestOverallFitness){
+						iterBest = w;
+					}
 					iB=i;
 				}
 				if(fitness[i]<fW){ //updates worst dividual
@@ -133,15 +136,13 @@ public class Runner {
 				}
 			}
 
-			if((fB != bestOverallFitness) && (bestOverallFitness>0)){
-				iterBest=iter;
-			}
+			//System.out.printf(" %d", fB);
 			bestOverallFitness = fB;
 			bestIndex=iB;
-			iter--;
+			//iter--;
 		}
 
-		double percent = (double) bestOverallFitness / totalClauses;
+		double percent = (double) bestOverallFitness / totalClauses *100;
 		//name of file
 		System.out.printf("The name of the file is: %s %n", fileName);
 		//number of variables and clauses 
