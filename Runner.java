@@ -34,20 +34,25 @@ public class Runner {
 	public double startingTemp = 30.0, coolingRate = 2.0;
 
 	//PBIL vals
-	public double [] prob;
-	public double plr, nlr, mAmt;
+	public double [] prob; //probability vector
+	public double plr, nlr, mAmt; //positive learning rate, negative learning rate, mutation Amount
 
 	//Shared vals
-	public String fileName;
-	public String alg;
-	public int [][] samples;
-	public int pop, iter;
-	public double mProb;
-	public int vars, totalClauses;
-	public long time;
+	public String fileName; //name of file
+	public String alg; //type of algorithm
+	public int [][] samples; //assignment of variables for each individual
+	public int pop, iter; //population, iterations
+	public double mProb; //mutatation probability
+	public int vars, totalClauses; //variables, total clauses
+	public long time; //runtime
 
 	Random randGen = new Random();
+
+
 	
+	//prints the output of the program
+	//file name, number of variables and clauses, number and percentages of clauses of best assignment
+	//best assignment of variables, iternation of best assignment
 	public void printResults(int bestFitness, int bestIndex, int bestIteration){
 		double percent = (double) bestFitness / totalClauses *100;
 		//name of file
@@ -68,6 +73,8 @@ public class Runner {
 
 	}
 
+
+	//PBIL algorithm
 	public void pbil(){
 		//initialize probability vector to 0.5
 		for(int i=0; i<vars; i++){
@@ -79,7 +86,7 @@ public class Runner {
 		int bestIndex = -1;
 
 		for(int w=0; w<iter; w++) {
-			//generate samples based on probability vectors
+			
 				int fB=0; //fitness of best individual 
 				int fW=totalClauses; //fitness worst individual
 				int iB=-1; //index of best individual
@@ -88,12 +95,13 @@ public class Runner {
 
 
 			for(int i=0; i<pop; i++) {
-				genSamples(i);
+				genSamples(i); //generate samples based on probability vectors
 				fitness[i] = fitness(samples[i]);
-				//System.out.printf(" %d", fitness[i]);
 				if(fitness[i]==totalClauses){
 					System.out.println("Found perfect match!");
 					iterBest=iter;
+					bestOverallFitness=totalClauses;
+					bestIndex=i;
             		break;
 				}
 				if(fitness[i]>fB){ //updates best individual
@@ -152,27 +160,13 @@ public class Runner {
 			bestIndex=iB;
 		}
 		printResults(bestOverallFitness, bestIndex, iterBest);
-		// double percent = (double) bestOverallFitness / totalClauses *100;
-		// //name of file
-		// System.out.printf("The name of the file is: %s %n", fileName);
-		// //number of variables and clauses 
-		// System.out.printf("The number of variables is: %d. The number of clauses is: %d %n", vars, totalClauses);
-		// //the number and percentage of clauses of best assignment
-		// System.out.printf("The number of satisfied clauses of the best assignment is: %d %n", bestOverallFitness);
-		// System.out.printf("The percentage of clauses of the best assignment is: %f %n", percent);
-		// //assignment of the results
-		// System.out.println("The assignment of the clauses is: ");
-		// for(int a=0; a<vars; a++){
-		// 	if(samples[bestIndex][a]==0){System.out.printf("%d ", -a-1);}
-		// 	else{System.out.printf("%d, ", a+1);}
-		// }
-		// //the iteration during which the best assignment was found
-		// System.out.printf("%nThe best assignment was found on the %d iteration %n", iterBest);
 	}
 
+
+	//generates samples based on probability vector
 	public void genSamples(int i){
 		for(int j=0; j<vars; j++){
-			if(randGen.nextDouble() <= prob[j]){ //alexi: for ga, the initial prob threshold could vary as well
+			if(randGen.nextDouble() <= prob[j]){ //for ga, the initial prob threshold could vary as well
 				samples[i][j]=1;
 			} else{
 				samples[i][j]=0;
@@ -275,6 +269,8 @@ public class Runner {
 		}
 	}
 
+
+
 	public int[] rsGen(int []fitnesses){
 		//sort individuals by fitness (low->high)
 		//fitnesses is array of fitness scores based by individual's index,
@@ -327,6 +323,7 @@ public class Runner {
 	}
 
 
+
 	public int[] tsGen(int []fitnesses){
 		int gCount = (int) (pop*0.4) + 2; //ensures at least 2 parents per gen
 		int wCount = (int) (gCount * 0.6) + 2;
@@ -376,6 +373,7 @@ public class Runner {
 	}
 
 
+
 	//Boltzmann Selection - returns array of index values of samples for reproduction
 	public int[] bsGen(int []fitnesses, int iteration){
 		double fitnessAvg, fitnessSum = 0; //sum of evolutionary fitnesses of all individuals
@@ -413,6 +411,8 @@ public class Runner {
 		}
 		return selectedArray;
 	}
+
+
 
 	public void ga(){
 		//generate individuals
@@ -506,11 +506,6 @@ public class Runner {
 		    clauses.add(valArray);
 		}
 		scanner.close();
-	
-		// for(int i=0; i<clauses.size(); i++){
-		// 	System.out.println(Arrays.toString(clauses.get(i)));
-		// }
-		
 	}
 
 
@@ -524,8 +519,9 @@ public class Runner {
 		//long start = System.nanoTime();
 		Runner evolAlg = new Runner();
 
-		long start = System.currentTimeMillis();
-		// process command line arguments
+		long start = System.currentTimeMillis(); // start timer
+		// process command line arguments 
+		//if there aren't 8 args, reminds user of parameters
 		if (args.length != 8){
 	    	System.out.println();
 	    	System.out.println("java Runner file individuals selection/learning rate crossover/negative learning rate pC/pM pM/mutation amount generations GA/PBIL");
@@ -584,7 +580,7 @@ public class Runner {
 				System.exit(1);
 			}
 
-			evolAlg.time = System.currentTimeMillis() - start;
+			evolAlg.time = System.currentTimeMillis() - start; //end timer
 			System.out.printf("The program ran for %d milliseconds.%n", evolAlg.time);
 	}
 }
