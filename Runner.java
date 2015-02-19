@@ -65,7 +65,7 @@ public class Runner {
 		//assignment of the results
 		System.out.println("The assignment of the clauses is: ");
 		for(int a=0; a<vars; a++){
-			if(samples[bestIndex][a]==0){System.out.printf("%d ", -a-1);}
+			if(samples[bestIndex][a]==0){System.out.printf("%d, ", -a-1);}
 			else{System.out.printf("%d, ", a+1);}
 		}
 		//the iteration during which the best assignment was found
@@ -185,6 +185,7 @@ public class Runner {
 	//with how many vals within those clauses are mismatched. Majercick says just
 	//count clauses, but I've left it flexible here for now.
 	public int fitness(int []individual){
+		System.out.println(Arrays.toString(individual));
 		int clauseMisses = 0;
 		for(int i=0; i<totalClauses; i++){
 			//check clause list at i, each in int [] 
@@ -208,7 +209,7 @@ public class Runner {
 	//breed individuals selected for reproduction
 	//accepts array of indexes of selected samples (correspond to individuals in global samples array)
 	public void runBreeding(int []reproducers){
-		System.out.println(Arrays.toString(reproducers));
+		// System.out.println(Arrays.toString(reproducers));
 		int[][] oldSamples = samples;
 		for(int i=0; i<pop; i++){
 			//randomly select two individuals
@@ -234,7 +235,8 @@ public class Runner {
 						}
 						//MUTATION
 						if(randGen.nextDouble() <= mProb){
-							samples[i][j] = randGen.nextInt(2*vars + 1) - vars;
+							samples[i][j] = randGen.nextInt(1);
+							// samples[i][j] = randGen.nextInt(2*vars + 1) - vars;
 						} else {
 							samples[i][j] = oldSamples[parents[p]][j];
 						}
@@ -251,7 +253,8 @@ public class Runner {
 						}
 						//MUTATION
 						if(randGen.nextDouble() <= mProb){
-							samples[i][j] = randGen.nextInt(2*vars + 1) - vars;
+							samples[i][j] = randGen.nextInt(1);
+							// samples[i][j] = randGen.nextInt(2*vars + 1) - vars;
 						} else {
 							samples[i][j] = oldSamples[parents[p]][j];
 						}
@@ -262,7 +265,7 @@ public class Runner {
 				for(int j=0; j<vars; j++){
 					//MUTATION
 					if(randGen.nextDouble() <= mProb){
-							samples[i][j] = randGen.nextInt(2*vars + 1) - vars;
+							samples[i][j] = randGen.nextInt(1);
 					} else {
 						samples[i][j] = oldSamples[parents[0]][j];
 					}
@@ -510,6 +513,7 @@ public class Runner {
 				// System.out.println(valArray[i]);
 			}
 		    clauses.add(valArray);
+		    // System.out.println(Arrays.toString(valArray));
 		}
 		scanner.close();
 	}
