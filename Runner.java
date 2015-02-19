@@ -488,6 +488,9 @@ public class Runner {
         } 
         //Get Header
         String header = scanner.nextLine();
+        while(header.charAt(0) == 'c'){
+        	header=scanner.nextLine();
+        }
         String[] headerVals = header.split(" ");
         System.out.println(Arrays.toString(headerVals));
         vars = Integer.parseInt(headerVals[2]);
