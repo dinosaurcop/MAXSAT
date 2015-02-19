@@ -84,6 +84,7 @@ public class Runner {
 		int iterBest = -1;
 		int bestOverallFitness = -1;
 		int bestIndex = -1;
+		int found = -1;
 
 		for(int w=0; w<iter; w++) {
 			
@@ -102,6 +103,7 @@ public class Runner {
 					iterBest=iter;
 					bestOverallFitness=totalClauses;
 					bestIndex=i;
+					found = 1; //solution is found
             		break;
 				}
 				if(fitness[i]>fB){ //updates best individual
@@ -158,6 +160,7 @@ public class Runner {
 
 			bestOverallFitness = fB;
 			bestIndex=iB;
+			if(found > 0){break;}
 		}
 		printResults(bestOverallFitness, bestIndex, iterBest);
 	}
