@@ -185,7 +185,7 @@ public class Runner {
 	//with how many vals within those clauses are mismatched. Majercick says just
 	//count clauses, but I've left it flexible here for now.
 	public int fitness(int []individual){
-		System.out.println(Arrays.toString(individual));
+		//System.out.println(Arrays.toString(individual));
 		int clauseMisses = 0;
 		for(int i=0; i<totalClauses; i++){
 			//check clause list at i, each in int [] 
