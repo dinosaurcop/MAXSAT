@@ -405,9 +405,9 @@ public class Runner {
 		// int selected[] = new int[pop];
 		for(i=0; i<pop; i++){
 			double selectProb = 60 * bsFitnesses[i]/fitnessSum; //fitness of individual/sum * constant for scaling
-			System.out.printf("prob: %f  fitness: %f   /boltzFSUM: %f\n", selectProb, bsFitnesses[i], fitnessSum);
+			//System.out.printf("prob: %f  fitness: %f   /boltzFSUM: %f\n", selectProb, bsFitnesses[i], fitnessSum);
 			if(randGen.nextDouble() <= selectProb){
-				System.out.printf("indiv selected, prob: %f  boltzFSUM: %f\n", selectProb, fitnessSum);
+				//System.out.printf("indiv selected, prob: %f  boltzFSUM: %f\n", selectProb, fitnessSum);
 				selected.add(i);
 			}
 		}
