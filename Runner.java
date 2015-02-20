@@ -185,7 +185,7 @@ public class Runner {
 	//with how many vals within those clauses are mismatched. Majercick says just
 	//count clauses, but I've left it flexible here for now.
 	public int fitness(int []individual){
-		System.out.println(Arrays.toString(individual));
+		//System.out.println(Arrays.toString(individual));
 		int clauseMisses = 0;
 		for(int i=0; i<totalClauses; i++){
 			//check clause list at i, each in int [] 
@@ -405,9 +405,9 @@ public class Runner {
 		// int selected[] = new int[pop];
 		for(i=0; i<pop; i++){
 			double selectProb = 60 * bsFitnesses[i]/fitnessSum; //fitness of individual/sum * constant for scaling
-			System.out.printf("prob: %f  fitness: %f   /boltzFSUM: %f\n", selectProb, bsFitnesses[i], fitnessSum);
+			//System.out.printf("prob: %f  fitness: %f   /boltzFSUM: %f\n", selectProb, bsFitnesses[i], fitnessSum);
 			if(randGen.nextDouble() <= selectProb){
-				System.out.printf("indiv selected, prob: %f  boltzFSUM: %f\n", selectProb, fitnessSum);
+				//System.out.printf("indiv selected, prob: %f  boltzFSUM: %f\n", selectProb, fitnessSum);
 				selected.add(i);
 			}
 		}
@@ -429,7 +429,7 @@ public class Runner {
 		boolean foundPerfect = false;
 		//while iteration < iter & not all clauses satisfied
 		for(i=0; i<iter; i++){
-			System.out.printf("Iteration: %d\n", i+1);
+			//System.out.printf("Iteration: %d\n", i+1);
 			//for each individual, generate fitness val (if any satisfy all clauses, return)
 			int fitness[] = new int[pop];
 			for(int j=0; j<pop; j++){
@@ -470,7 +470,7 @@ public class Runner {
 					System.out.println("Selection method must match 'ts', 'rs', or 'bs'");
 
 			}
-			System.out.printf("Pop: %d, Selected length: %d\n", pop, selected.length);
+			//System.out.printf("Pop: %d, Selected length: %d\n", pop, selected.length);
 			//use crossover to breed individuals
 			runBreeding(selected);
 		}
