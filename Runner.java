@@ -470,7 +470,7 @@ public class Runner {
 					System.out.println("Selection method must match 'ts', 'rs', or 'bs'");
 
 			}
-			System.out.printf("Pop: %d, Selected length: %d\n", pop, selected.length);
+			//System.out.printf("Pop: %d, Selected length: %d\n", pop, selected.length);
 			//use crossover to breed individuals
 			runBreeding(selected);
 		}
