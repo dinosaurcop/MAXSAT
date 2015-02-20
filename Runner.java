@@ -429,7 +429,7 @@ public class Runner {
 		boolean foundPerfect = false;
 		//while iteration < iter & not all clauses satisfied
 		for(i=0; i<iter; i++){
-			System.out.printf("Iteration: %d\n", i+1);
+			//System.out.printf("Iteration: %d\n", i+1);
 			//for each individual, generate fitness val (if any satisfy all clauses, return)
 			int fitness[] = new int[pop];
 			for(int j=0; j<pop; j++){
