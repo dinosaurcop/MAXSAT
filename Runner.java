@@ -498,6 +498,10 @@ public class Runner {
         	header=scanner.nextLine();
         }
         String[] headerVals = header.split(" ");
+        if(headerVals.count != 4){
+        	System.out.println("Incorrect Header. Please check spacing. Format should be: p cnf max_valaue[int] clause_count[int]");
+        	System.exit(1);
+        }
         System.out.println(Arrays.toString(headerVals));
         vars = Integer.parseInt(headerVals[2]);
         totalClauses = Integer.parseInt(headerVals[3]);
