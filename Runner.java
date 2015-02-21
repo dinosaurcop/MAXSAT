@@ -297,14 +297,16 @@ public class Runner {
 		// System.out.println(Arrays.asList(sampleObjects.index));
 		//2. select individuals with probability rank/ranksum
 		List<Integer> selected = new ArrayList<Integer>();
-
-		//random selection pool size
-		// for(i=0; i<pop; i++){
-		// 	System.out.printf("prob: %d,  index: %d,  ranksum: %d\n", i/rankSum, i, rankSum);
-		// 	if(randGen.nextDouble() <= i/rankSum){
-		// 		selected.add(sampleObjects[i].index);
-		// 	}
-		// }
+		
+		/*
+		random selection pool size - turn on for variable reproducer pool sizes
+		for(i=0; i<pop; i++){
+			System.out.printf("prob: %d,  index: %d,  ranksum: %d\n", i/rankSum, i, rankSum);
+			if(randGen.nextDouble() <= i/rankSum){
+				selected.add(sampleObjects[i].index);
+			}
+		}
+		*/
 		//roullette wheel
 		for(i=0; i<repSize; i++){
 			int val = randGen.nextInt(rankSum);
@@ -402,7 +404,6 @@ public class Runner {
 		// 	System.out.printf("expected val for [%d] == %f\n", i, bsFitnesses[i]);
 		// }
 		List<Integer> selected = new ArrayList<Integer>();
-		// int selected[] = new int[pop];
 		for(i=0; i<pop; i++){
 			double selectProb = 60 * bsFitnesses[i]/fitnessSum; //fitness of individual/sum * constant for scaling
 			//System.out.printf("prob: %f  fitness: %f   /boltzFSUM: %f\n", selectProb, bsFitnesses[i], fitnessSum);
@@ -414,6 +415,9 @@ public class Runner {
 		int selectedArray[] = new int[selected.size()];
 		for(i=0; i<selectedArray.length; i++){
 			selectedArray[i] = selected.get(i);
+		}
+		if(selectedArray.length<2){
+			selectedArray = bsGen(fitnesses, iteration);
 		}
 		return selectedArray;
 	}
@@ -498,7 +502,7 @@ public class Runner {
         	header=scanner.nextLine();
         }
         String[] headerVals = header.split(" ");
-        if(headerVals.count != 4){
+        if(headerVals.length != 4){
         	System.out.println("Incorrect Header. Please check spacing. Format should be: p cnf max_valaue[int] clause_count[int]");
         	System.exit(1);
         }
